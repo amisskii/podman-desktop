@@ -91,8 +91,9 @@ jobs:
       - name: increase resource limits
         run: |
           pwd
-          echo 'fs.inotify.max_user_watches = 524288' >> /etc/sysctl.conf
-          echo 'fs.inotify.max_user_instances = 512' >> /etc/sysctl.conf
+          cd ~
+          sudo echo 'fs.inotify.max_user_watches = 524288' >> /etc/sysctl.conf
+          sudo echo 'fs.inotify.max_user_instances = 512' >> /etc/sysctl.conf
 
       - name: Run All E2E tests
         env:
@@ -101,7 +102,7 @@ jobs:
           SKIP_KIND_INSTALL: 'true'
         run: yarn test:e2e
 
-        
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
