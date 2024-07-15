@@ -95,6 +95,7 @@ jobs:
           TEST_PODMAN_MACHINE: 'true'
           SKIP_KIND_INSTALL: 'true'
         run: |
+          sudo prlimit --pid $$ --nofile=1048576:1048576
           sudo sysctl fs.inotify.max_user_instances=1280
           sudo sysctl fs.inotify.max_user_watches=655360
           yarn test:e2e
