@@ -88,18 +88,20 @@ jobs:
       - name: Execute yarn
         run: yarn --frozen-lockfile
 
+      - name: increase resource limits
+        run: |
+          pwd
+          echo 'fs.inotify.max_user_watches = 524288' >> /etc/sysctl.conf
+          echo 'fs.inotify.max_user_instances = 512' >> /etc/sysctl.conf
 
       - name: Run All E2E tests
         env:
           PODMANDESKTOP_CI_BOT_TOKEN: ${{ secrets.PODMANDESKTOP_CI_BOT_TOKEN }}
           TEST_PODMAN_MACHINE: 'true'
           SKIP_KIND_INSTALL: 'true'
-        run: |
-          sudo prlimit --pid $$ --nofile=1048576:1048576
-          sudo sysctl fs.inotify.max_user_instances=1280
-          sudo sysctl fs.inotify.max_user_watches=655360
-          yarn test:e2e
+        run: yarn test:e2e
 
+        
       - uses: actions/upload-artifact@v4
         if: always()
         with:
