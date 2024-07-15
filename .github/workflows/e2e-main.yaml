@@ -88,12 +88,16 @@ jobs:
       - name: Execute yarn
         run: yarn --frozen-lockfile
 
-      - name: increase resource limits
-        run: |
-          pwd
-          cd ~
-          sudo echo 'fs.inotify.max_user_watches = 524288' >> /etc/sysctl.conf
-          sudo echo 'fs.inotify.max_user_instances = 512' >> /etc/sysctl.conf
+    - name: Increase inotify limits
+      run: |
+        echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf
+        echo fs.inotify.max_user_instances=512 | sudo tee -a /etc/sysctl.conf
+        sudo sysctl -p
+
+    - name: Verify inotify limits
+      run: |
+        sysctl fs.inotify.max_user_watches
+        sysctl fs.inotify.max_user_instances
 
       - name: Run All E2E tests
         env:
