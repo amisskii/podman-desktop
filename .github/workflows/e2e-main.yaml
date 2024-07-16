@@ -88,23 +88,18 @@ jobs:
       - name: Execute yarn
         run: yarn --frozen-lockfile
 
-      
-      - name: Verify inotify limits1
-        run: |
-          sysctl fs.inotify.max_user_watches
-          sysctl fs.inotify.max_user_instances
-
-
-      - name: Increase inotify limits
-        run: |
-          echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf
-          echo fs.inotify.max_user_instances=512 | sudo tee -a /etc/sysctl.conf
-          sudo sysctl -p
-
       - name: Verify inotify limits2
         run: |
           sysctl fs.inotify.max_user_watches
           sysctl fs.inotify.max_user_instances
+      
+      - name: Kind version
+        run: |
+          kind --version
+          kind create cluster --retain
+          kind export logs 
+          pwd 
+          ls -a
 
       - name: Run All E2E tests
         env:
