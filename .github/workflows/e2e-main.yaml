@@ -88,11 +88,22 @@ jobs:
       - name: Execute yarn
         run: yarn --frozen-lockfile
 
-      - name: Verify inotify limits2
+      - name: set inotify limits
         run: |
+          sudo sysctl -w fs.inotify.max_user_watches=1048576
+          sudo sysctl -w fs.inotify.max_user_instances=1024
+          sudo sysctl --system
+
+      - name: verify inotify limits
+        run: | 
           sysctl fs.inotify.max_user_watches
           sysctl fs.inotify.max_user_instances
-          
+
+      - name: restart podman
+        run: | 
+          sudo systemctl daemon-reload
+          sudo systemctl restart podman
+
       - name: Run All E2E tests
         env:
           PODMANDESKTOP_CI_BOT_TOKEN: ${{ secrets.PODMANDESKTOP_CI_BOT_TOKEN }}
