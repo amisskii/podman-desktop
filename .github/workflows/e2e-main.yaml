@@ -94,15 +94,8 @@ jobs:
           sudo sysctl -w fs.inotify.max_user_instances=1024
           sudo sysctl --system
 
-      - name: verify inotify limits
-        run: | 
-          sysctl fs.inotify.max_user_watches
-          sysctl fs.inotify.max_user_instances
-
-      - name: restart podman
-        run: | 
-          sudo systemctl daemon-reload
-          sudo systemctl restart podman
+      - name: Create Kind cluster
+        run: kind create cluster --name kind-cluster
 
       - name: Run All E2E tests
         env:
