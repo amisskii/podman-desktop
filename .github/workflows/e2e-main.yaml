@@ -87,6 +87,22 @@ jobs:
 
       - name: Execute yarn
         run: yarn --frozen-lockfile
+        
+
+      - name: verify inotify values1
+        run: | 
+          sysctl fs.inotify.max_user_watches
+          sysctl fs.inotify.max_user_instances
+  
+      - name: increase inorify limits
+        run: | 
+          sudo sysctl fs.inotify.max_user_watches=1048576
+          sudo sysctl fs.inotify.max_user_instances=1024
+          
+      - name: verify inotify values1
+        run: | 
+          sysctl fs.inotify.max_user_watches
+          sysctl fs.inotify.max_user_instances
 
       - name: Run All E2E tests
         env:
