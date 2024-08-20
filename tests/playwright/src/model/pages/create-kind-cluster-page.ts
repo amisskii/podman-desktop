@@ -16,9 +16,8 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
-import { expect as playExpect, type Locator, type Page } from '@playwright/test';
+import { type Locator, type Page } from '@playwright/test';
 
-import type { KindClusterOptions } from '../core/types';
 import { BasePage } from './base-page';
 
 export class CreateKindClusterPage extends BasePage {
@@ -50,66 +49,5 @@ export class CreateKindClusterPage extends BasePage {
     this.httpsPort = this.clusterPropertiesInformation.getByLabel('HTTPS Port');
     this.containerImage = this.clusterPropertiesInformation.getByPlaceholder('Leave empty for using latest.');
     this.goBackButton = this.page.getByRole('button', { name: 'Go back to resources' });
-  }
-
-  public async createClusterDefault(clusterName: string, timeout?: number): Promise<void> {
-    await this.fillTextbox(this.clusterNameField, clusterName);
-    await playExpect(this.providerTypeCombobox).toHaveValue('podman');
-    await playExpect(this.httpPort).toHaveValue('9090');
-    await playExpect(this.httpsPort).toHaveValue('9443');
-    await playExpect(this.controllerCheckbox).toBeChecked();
-    await playExpect(this.containerImage).toBeEmpty();
-    await this.createCluster(timeout);
-  }
-
-  public async createClusterParametrized(
-    { clusterName, providerType, httpPort, httpsPort, useIngressController, containerImage }: KindClusterOptions = {},
-    timeout?: number,
-  ): Promise<void> {
-    if (clusterName) {
-      await this.fillTextbox(this.clusterNameField, clusterName);
-    }
-
-    if (providerType) {
-      await playExpect(this.providerTypeCombobox).toBeVisible();
-      const providerTypeOptions = await this.providerTypeCombobox.locator('option').allInnerTexts();
-      if (providerTypeOptions.includes(providerType)) {
-        await this.providerTypeCombobox.selectOption({ value: providerType });
-        await playExpect(this.providerTypeCombobox).toHaveValue(providerType);
-      } else {
-        throw new Error(`${providerType} doesn't exist`);
-      }
-
-      if (httpPort) {
-        await this.fillTextbox(this.httpPort, httpPort);
-      }
-      if (httpsPort) {
-        await this.fillTextbox(this.httpsPort, httpsPort);
-      }
-
-      if (!useIngressController) {
-        await playExpect(this.controllerCheckbox).toBeEnabled();
-        await this.controllerCheckbox.uncheck();
-        await playExpect(this.controllerCheckbox).not.toBeChecked();
-      }
-
-      if (containerImage) {
-        await this.fillTextbox(this.containerImage, containerImage);
-      }
-      await this.createCluster(timeout);
-    }
-  }
-
-  private async createCluster(timeout: number = 120000): Promise<void> {
-    await playExpect(this.clusterCreationButton).toBeVisible();
-    await this.clusterCreationButton.click();
-    await playExpect(this.goBackButton).toBeVisible({ timeout: timeout });
-    await this.goBackButton.click();
-  }
-
-  private async fillTextbox(textbox: Locator, text: string): Promise<void> {
-    await playExpect(textbox).toBeVisible();
-    await textbox.fill(text);
-    await playExpect(textbox).toHaveValue(text);
   }
 }
