@@ -33,6 +33,7 @@ onMount(() => {
   {/if}
 
   <button
+    aria-label="Kubernetes"
     class="inline-block flex flex-col justify-center items-center text-[var(--pd-global-nav-icon)] hover:text-[var(--pd-global-nav-icon-hover)]"
     on:click={() => (expanded = !expanded)}
     disabled={expanded && $count < 2}>

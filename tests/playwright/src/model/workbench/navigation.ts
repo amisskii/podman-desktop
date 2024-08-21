@@ -36,6 +36,8 @@ export class NavigationBar {
   readonly dashboardLink: Locator;
   readonly settingsLink: Locator;
   readonly extensionsLink: Locator;
+  readonly kubernetesButton: Locator;
+  readonly deploymentsLink: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -47,6 +49,8 @@ export class NavigationBar {
     this.dashboardLink = this.page.getByRole('link', { name: 'Dashboard' });
     this.settingsLink = this.page.getByRole('link', { name: 'Settings' });
     this.extensionsLink = this.navigationLocator.getByRole('link', { name: 'Extensions', exact: true });
+    this.kubernetesButton = this.page.getByRole('button', { name: 'Kubernetes' });
+    this.deploymentsLink = this.page.getByRole('link', { name: 'Deployments' });
   }
 
   async openDashboard(): Promise<DashboardPage> {
