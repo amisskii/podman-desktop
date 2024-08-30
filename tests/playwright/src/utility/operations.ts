@@ -18,17 +18,20 @@
 
 import { execSync } from 'node:child_process';
 
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { expect as playExpect } from '@playwright/test';
 import type { TaskResult } from 'vitest';
 
 import { ResourceElementActions } from '../model/core/operations';
 import { ResourceElementState } from '../model/core/states';
+import type { KindClusterOptions } from '../model/core/types';
+import { CreateKindClusterPage } from '../model/pages/create-kind-cluster-page';
 import { RegistriesPage } from '../model/pages/registries-page';
 import { ResourceConnectionCardPage } from '../model/pages/resource-connection-card-page';
 import { ResourcesPage } from '../model/pages/resources-page';
 import { VolumeDetailsPage } from '../model/pages/volume-details-page';
 import { NavigationBar } from '../model/workbench/navigation';
+import { StatusBar } from '../model/workbench/status-bar';
 import type { PodmanDesktopRunner } from '../runner/podman-desktop-runner';
 import { waitUntil, waitWhile } from './wait';
 
@@ -194,7 +197,6 @@ export async function deletePodmanMachine(page: Page, machineVisibleName: string
     await playExpect(podmanResourceCard.resourceElementConnectionStatus).toBeVisible({ timeout: 3000 });
     if ((await podmanResourceCard.resourceElementConnectionStatus.innerText()) === ResourceElementState.Starting) {
       console.log('Podman machine is in starting currently, will send stop command via CLI');
-      // eslint-disable-next-line sonarjs/os-command
       execSync(`podman machine stop ${machineVisibleName}`);
       await playExpect(podmanResourceCard.resourceElementConnectionStatus).toHaveText(ResourceElementState.Off, {
         timeout: 30_000,
@@ -246,4 +248,106 @@ export async function getVolumeNameForContainer(page: Page, containerName: strin
       throw error;
     }
   }
+}
+
+export async function ensureKindCliInstalled(page: Page): Promise<void> {
+  const skipKindInstallation = process.env.SKIP_KIND_INSTALL ? process.env.SKIP_KIND_INSTALL : false;
+  const RESOURCE_NAME = 'kind';
+  const navigationBar = new NavigationBar(page);
+  const statusBar = new StatusBar(page);
+  const settingsPage = await navigationBar.openSettings();
+  const resourcesPage = await settingsPage.openTabPage(ResourcesPage);
+
+  await playExpect.poll(async () => resourcesPage.resourceCardIsVisible(RESOURCE_NAME)).toBeFalsy();
+  if (!skipKindInstallation) {
+    await playExpect(statusBar.kindInstallationButton).toBeVisible();
+    await statusBar.installKindCLI();
+  }
+  await playExpect.poll(async () => await resourcesPage.resourceCardIsVisible(RESOURCE_NAME)).toBeTruthy();
+  await playExpect(statusBar.kindInstallationButton).not.toBeVisible();
+}
+
+export async function createClusterDefault(page: Page, clusterName: string, timeout?: number): Promise<void> {
+  const createKindClusterPage = await openCreateKindClusterPage(page);
+  await fillTextbox(createKindClusterPage.clusterNameField, clusterName);
+  await playExpect(createKindClusterPage.providerTypeCombobox).toHaveValue('podman');
+  await playExpect(createKindClusterPage.httpPort).toHaveValue('9090');
+  await playExpect(createKindClusterPage.httpsPort).toHaveValue('9443');
+  await playExpect(createKindClusterPage.controllerCheckbox).toBeChecked();
+  await playExpect(createKindClusterPage.containerImage).toBeEmpty();
+  await createKindCluster(page, timeout);
+}
+
+export async function createClusterParametrized(
+  page: Page,
+  { clusterName, providerType, httpPort, httpsPort, useIngressController, containerImage }: KindClusterOptions = {},
+  timeout?: number,
+): Promise<void> {
+  const createKindClusterPage = await openCreateKindClusterPage(page);
+
+  if (clusterName) {
+    await fillTextbox(createKindClusterPage.clusterNameField, clusterName);
+  }
+
+  if (providerType) {
+    await playExpect(createKindClusterPage.providerTypeCombobox).toBeVisible();
+    const providerTypeOptions = await createKindClusterPage.providerTypeCombobox.locator('option').allInnerTexts();
+    if (providerTypeOptions.includes(providerType)) {
+      await createKindClusterPage.providerTypeCombobox.selectOption({ value: providerType });
+      await playExpect(createKindClusterPage.providerTypeCombobox).toHaveValue(providerType);
+    } else {
+      throw new Error(`${providerType} doesn't exist`);
+    }
+
+    if (httpPort) {
+      await fillTextbox(createKindClusterPage.httpPort, httpPort);
+    }
+    if (httpsPort) {
+      await fillTextbox(createKindClusterPage.httpsPort, httpsPort);
+    }
+
+    if (!useIngressController) {
+      await playExpect(createKindClusterPage.controllerCheckbox).toBeEnabled();
+      await createKindClusterPage.controllerCheckbox.uncheck();
+      await playExpect(createKindClusterPage.controllerCheckbox).not.toBeChecked();
+    }
+
+    if (containerImage) {
+      await fillTextbox(createKindClusterPage.containerImage, containerImage);
+    }
+    await createKindCluster(page, timeout);
+  }
+}
+
+async function openCreateKindClusterPage(page: Page): Promise<CreateKindClusterPage> {
+  const RESOURCE_NAME = 'kind';
+  const navigationBar = new NavigationBar(page);
+  const settingsPage = await navigationBar.openSettings();
+  const resourcesPage = await settingsPage.openTabPage(ResourcesPage);
+  await playExpect.poll(async () => resourcesPage.resourceCardIsVisible(RESOURCE_NAME)).toBeTruthy();
+
+  const kindResourceCard = new ResourceConnectionCardPage(page, RESOURCE_NAME);
+  await playExpect(kindResourceCard.markdownContent).toBeVisible();
+  await playExpect(kindResourceCard.createButton).toBeVisible();
+  await kindResourceCard.createButton.click();
+  return new CreateKindClusterPage(page);
+}
+
+async function createKindCluster(page: Page, timeout: number = 200000): Promise<void> {
+  const clusterCreationPage = new CreateKindClusterPage(page);
+  await playExpect(clusterCreationPage.clusterCreationButton).toBeVisible();
+  await clusterCreationPage.clusterCreationButton.click();
+  await playExpect(clusterCreationPage.goBackButton).toBeVisible({ timeout: timeout });
+  await clusterCreationPage.goBackButton.click();
+  const kindResourceCard = new ResourceConnectionCardPage(page, 'kind');
+  await playExpect(kindResourceCard.resourceElement).toBeVisible();
+  await playExpect(kindResourceCard.resourceElementConnectionStatus).toHaveText(ResourceElementState.Running, {
+    timeout: 200000,
+  });
+}
+
+async function fillTextbox(textbox: Locator, text: string): Promise<void> {
+  await playExpect(textbox).toBeVisible();
+  await textbox.fill(text);
+  await playExpect(textbox).toHaveValue(text);
 }

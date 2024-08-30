@@ -22,6 +22,7 @@ import { ContainersPage } from '../pages/containers-page';
 import { DashboardPage } from '../pages/dashboard-page';
 import { ExtensionsPage } from '../pages/extensions-page';
 import { ImagesPage } from '../pages/images-page';
+import { KuberenetesResourcePage } from '../pages/kubernetes-resource-page';
 import { PodsPage } from '../pages/pods-page';
 import { SettingsBar } from '../pages/settings-bar';
 import { VolumesPage } from '../pages/volumes-page';
@@ -36,6 +37,7 @@ export class NavigationBar {
   readonly dashboardLink: Locator;
   readonly settingsLink: Locator;
   readonly extensionsLink: Locator;
+  readonly kubernetesButton: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -47,6 +49,7 @@ export class NavigationBar {
     this.dashboardLink = this.page.getByRole('link', { name: 'Dashboard' });
     this.settingsLink = this.page.getByRole('link', { name: 'Settings' });
     this.extensionsLink = this.navigationLocator.getByRole('link', { name: 'Extensions', exact: true });
+    this.kubernetesButton = this.page.getByRole('button', { name: 'Kubernetes' });
   }
 
   async openDashboard(): Promise<DashboardPage> {
@@ -86,6 +89,13 @@ export class NavigationBar {
     await this.volumesLink.waitFor({ state: 'visible', timeout: 3000 });
     await this.volumesLink.click({ timeout: 5000 });
     return new VolumesPage(this.page);
+  }
+
+  //to-do ensure kubernetes pages are visible (kubernetes button is clicked)
+
+  async openKubernetesResource(title: string): Promise<KuberenetesResourcePage> {
+    //to-do kubernetes button is clicked
+    return new KuberenetesResourcePage(this.page, title);
   }
 
   async openExtensions(): Promise<ExtensionsPage> {
