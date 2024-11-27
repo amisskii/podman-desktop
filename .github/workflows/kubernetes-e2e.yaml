@@ -15,7 +15,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-name: e2e-tests-main
+name: kubernetes-e2e-tests-main
 
 on:
   push:
