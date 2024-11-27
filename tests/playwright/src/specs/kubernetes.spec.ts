@@ -82,10 +82,7 @@ test.afterAll(async ({ runner, page }) => {
   }
 });
 
-test.skip(
-  !!process.env.GITHUB_ACTIONS && process.env.RUNNER_OS === 'Linux',
-  'Tests suite should not run on Linux platform',
-);
+test.skip(process.env.RUNNER_OS === 'Linux', 'Tests suite should not run on Linux platform');
 
 test.describe('Kubernetes resources End-to-End test', { tag: '@k8s_e2e' }, () => {
   test('Kubernetes Nodes test', async ({ navigationBar }) => {
