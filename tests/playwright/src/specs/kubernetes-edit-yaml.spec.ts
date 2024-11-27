@@ -74,8 +74,6 @@ test.afterAll(async ({ runner, page }) => {
   }
 });
 
-test.skip(process.env.RUNNER_OS === 'Linux', 'Tests suite should not run on Linux platform');
-
 test.describe.serial('Kubernetes Edit YAML Feature E2E Test', { tag: '@k8s_e2e' }, () => {
   test('Create a Kubernetes deployment resource', async ({ navigationBar }) => {
     test.setTimeout(80_000);

@@ -85,7 +85,6 @@ test.describe.serial('Kind End-to-End Tests', { tag: '@k8s_e2e' }, () => {
       });
     });
   test.describe('Kind cluster operations', () => {
-    test.skip(process.env.RUNNER_OS === 'Linux', 'Tests suite should not run on Linux platform');
     test('Create a Kind cluster', async ({ page }) => {
       test.setTimeout(CLUSTER_CREATION_TIMEOUT);
       await createKindCluster(page, CLUSTER_NAME, true, CLUSTER_CREATION_TIMEOUT);

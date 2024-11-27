@@ -71,8 +71,6 @@ test.afterAll(async ({ runner, page }) => {
   }
 });
 
-test.skip(process.env.RUNNER_OS === 'Linux', 'Tests suite should not run on Linux platform');
-
 test.describe.serial('Deploy a container to the Kind cluster', { tag: '@k8s_e2e' }, () => {
   test('Pull an image and start a container', async ({ navigationBar }) => {
     const imagesPage = await navigationBar.openImages();
