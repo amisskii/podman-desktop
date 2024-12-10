@@ -101,6 +101,11 @@ jobs:
       - name: Execute pnpm
         run: pnpm install
 
+      - name: increase the limits
+        run: |
+            sudo sysctl fs.inotify.max_user_watches=524288
+            sudo sysctl fs.inotify.max_user_instances=512
+
       - name: Install Kind CLI 
         uses: helm/kind-action@v1.10.0
         with: 
