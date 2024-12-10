@@ -83,7 +83,7 @@ test.afterAll(async ({ runner, page }) => {
 });
 
 test.skip(
-  !!process.env.GITHUB_ACTIONS && process.env.RUNNER_OS === 'Linux',
+  !process.env.GITHUB_ACTIONS && process.env.RUNNER_OS === 'Linux',
   'Tests suite should not run on Linux platform',
 );
 
