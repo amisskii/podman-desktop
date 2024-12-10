@@ -118,7 +118,7 @@ jobs:
           path=$(realpath ./dist/linux-unpacked/podman-desktop)
           echo "Podman Desktop built binary: $path"
           export PODMAN_DESKTOP_BINARY_PATH=$path
-          pnpm test:e2e
+          pnpm test:e2e:k8s
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v5
