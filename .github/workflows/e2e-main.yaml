@@ -103,8 +103,6 @@ jobs:
 
       - name: Install Kind CLI 
         uses: helm/kind-action@v1.10.0
-        with: 
-          install_only: true
             
       - name: Run E2E tests in Production Mode
         env:

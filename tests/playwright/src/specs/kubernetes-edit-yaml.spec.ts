@@ -61,8 +61,8 @@ test.beforeAll(async ({ runner, welcomePage, page, navigationBar }) => {
     await settingsBar.cliToolsTab.click();
 
     await ensureCliInstalled(page, 'Kind');
+    await createKindCluster(page, CLUSTER_NAME, true, CLUSTER_CREATION_TIMEOUT);
   }
-  await createKindCluster(page, CLUSTER_NAME, true, CLUSTER_CREATION_TIMEOUT);
 });
 
 test.afterAll(async ({ runner, page }) => {

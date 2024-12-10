@@ -90,6 +90,7 @@ test.describe.serial('Kind End-to-End Tests', { tag: '@k8s_e2e' }, () => {
       'Tests suite should not run on Linux platform',
     );
     test('Create a Kind cluster', async ({ page }) => {
+      test.skip(!!skipKindInstallation, 'Skipping Kind installation');
       test.setTimeout(CLUSTER_CREATION_TIMEOUT);
       await createKindCluster(page, CLUSTER_NAME, true, CLUSTER_CREATION_TIMEOUT);
     });
