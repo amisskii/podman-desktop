@@ -95,6 +95,10 @@ test.describe.serial('Kind End-to-End Tests', { tag: '@k8s_e2e' }, () => {
       });
     });
   test.describe('Kind cluster operations', () => {
+    test.skip(
+      !!process.env.GITHUB_ACTIONS && process.env.RUNNER_OS === 'Linux',
+      'Tests suite should not run on Linux platform',
+    );
     test('Create a Kind cluster', async ({ page }) => {
       test.skip(!!skipKindInstallation, 'Skipping Kind installation');
       test.setTimeout(CLUSTER_CREATION_TIMEOUT);
@@ -140,10 +144,6 @@ test.describe.serial('Kind End-to-End Tests', { tag: '@k8s_e2e' }, () => {
     });
 
     test('Kind cluster operations - DELETE', async ({ page }) => {
-      test.skip(
-        !!process.env.GITHUB_ACTIONS && process.env.RUNNER_OS === 'Linux',
-        'Tests suite should not run on Linux platform',
-      );
       await deleteKindCluster(page, KIND_CONTAINER_NAME, CLUSTER_NAME);
     });
   });
