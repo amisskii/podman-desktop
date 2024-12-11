@@ -70,7 +70,7 @@ test.beforeAll(async ({ runner, welcomePage, page, navigationBar }) => {
 test.afterAll(async ({ runner, page }) => {
   test.setTimeout(90000);
   try {
-    if (!process.env.GITHUB_ACTIONS && process.env.RUNNER_OS === 'Linux') {
+    if (!(process.env.GITHUB_ACTIONS && process.env.RUNNER_OS === 'Linux')) {
       await deleteContainer(page, CONTAINER_NAME);
       await deleteImage(page, IMAGE_TO_PULL);
       await deleteKindCluster(page, KIND_CONTAINER_NAME, CLUSTER_NAME);
