@@ -101,11 +101,6 @@ jobs:
       - name: Execute pnpm
         run: pnpm install
 
-      - name: increase the limits
-        run: |
-            sudo sysctl fs.inotify.max_user_watches=524288
-            sudo sysctl fs.inotify.max_user_instances=512
-
       - name: Install Kind CLI 
         uses: helm/kind-action@v1.10.0
         with: 
@@ -118,6 +113,8 @@ jobs:
           SKIP_KIND_INSTALL: 'true'
           ELECTRON_ENABLE_INSPECT: true
         run: |
+          sudo sysctl fs.inotify.max_user_watches=524288
+          sudo sysctl fs.inotify.max_user_instances=512
           echo "Compiling the Podman Desktop in production mode"
           pnpm compile:current --linux dir
           path=$(realpath ./dist/linux-unpacked/podman-desktop)
