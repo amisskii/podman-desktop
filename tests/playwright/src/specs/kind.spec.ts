@@ -53,7 +53,7 @@ test.beforeAll(async ({ runner, page, welcomePage, navigationBar }) => {
     const kubePage = await settingsBar.openTabPage(KubeContextPage);
     await playExpect(kubePage.heading).toBeVisible();
 
-    await kubePage.setDefaultContext('kind-kind-cluster');
+    playExpect(await kubePage.isContextDefault('kind-kind-cluster')).toBeTruthy();
   }
 });
 
@@ -142,6 +142,7 @@ test.describe.serial('Kind End-to-End Tests', { tag: '@k8s_e2e' }, () => {
     });
 
     test('Kind cluster operations - DELETE', async ({ page }) => {
+      test.skip(!!skipKindInstallation, 'Skipping Kind installation');
       await deleteKindCluster(page, KIND_CONTAINER_NAME, CLUSTER_NAME);
     });
   });

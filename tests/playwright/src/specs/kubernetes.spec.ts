@@ -77,14 +77,16 @@ test.beforeAll(async ({ runner, welcomePage, page, navigationBar }) => {
     const kubePage = await settingsBar.openTabPage(KubeContextPage);
     await playExpect(kubePage.heading).toBeVisible();
 
-    await kubePage.setDefaultContext('kind-kind-cluster');
+    playExpect(await kubePage.isContextDefault('kind-kind-cluster')).toBeTruthy();
   }
 });
 
 test.afterAll(async ({ runner, page }) => {
   test.setTimeout(90000);
   try {
-    await deleteKindCluster(page, KIND_NODE, CLUSTER_NAME);
+    if (!process.env.GITHUB_ACTIONS && process.env.RUNNER_OS === 'Linux') {
+      await deleteKindCluster(page, KIND_NODE, CLUSTER_NAME);
+    }
   } finally {
     await runner.close();
   }

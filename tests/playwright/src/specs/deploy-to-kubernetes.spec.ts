@@ -63,16 +63,18 @@ test.beforeAll(async ({ runner, welcomePage, page, navigationBar }) => {
     const kubePage = await settingsBar.openTabPage(KubeContextPage);
     await playExpect(kubePage.heading).toBeVisible();
 
-    await kubePage.setDefaultContext('kind-kind-cluster');
+    playExpect(await kubePage.isContextDefault('kind-kind-cluster')).toBeTruthy();
   }
 });
 
 test.afterAll(async ({ runner, page }) => {
   test.setTimeout(90000);
   try {
-    await deleteContainer(page, CONTAINER_NAME);
-    await deleteImage(page, IMAGE_TO_PULL);
-    await deleteKindCluster(page, KIND_CONTAINER_NAME, CLUSTER_NAME);
+    if (!process.env.GITHUB_ACTIONS && process.env.RUNNER_OS === 'Linux') {
+      await deleteContainer(page, CONTAINER_NAME);
+      await deleteImage(page, IMAGE_TO_PULL);
+      await deleteKindCluster(page, KIND_CONTAINER_NAME, CLUSTER_NAME);
+    }
   } finally {
     await runner.close();
     console.log('Runner closed');
