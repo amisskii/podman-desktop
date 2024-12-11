@@ -22,6 +22,7 @@ import { fileURLToPath } from 'node:url';
 import { PlayYamlRuntime } from '../model/core/operations';
 import { KubernetesResourceState } from '../model/core/states';
 import { KubernetesResources } from '../model/core/types';
+import { KubeContextPage } from '../model/pages/kubernetes-context-page';
 import { KubernetesResourceDetailsPage } from '../model/pages/kubernetes-resource-details-page';
 import { expect as playExpect, test } from '../utility/fixtures';
 import {
@@ -61,8 +62,15 @@ test.beforeAll(async ({ runner, welcomePage, page, navigationBar }) => {
     await settingsBar.cliToolsTab.click();
 
     await ensureCliInstalled(page, 'Kind');
+    await createKindCluster(page, CLUSTER_NAME, true, CLUSTER_CREATION_TIMEOUT);
   }
-  await createKindCluster(page, CLUSTER_NAME, true, CLUSTER_CREATION_TIMEOUT);
+  if (process.env.GITHUB_ACTIONS && process.env.RUNNER_OS === 'Linux') {
+    const settingsBar = await navigationBar.openSettings();
+    const kubePage = await settingsBar.openTabPage(KubeContextPage);
+    await playExpect(kubePage.heading).toBeVisible();
+
+    await kubePage.setDefaultContext('kind-kind-cluster');
+  }
 });
 
 test.afterAll(async ({ runner, page }) => {

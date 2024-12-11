@@ -18,6 +18,7 @@
 
 import { ResourceElementActions } from '../model/core/operations';
 import { ContainerState, ResourceElementState } from '../model/core/states';
+import { KubeContextPage } from '../model/pages/kubernetes-context-page';
 import { ResourceConnectionCardPage } from '../model/pages/resource-connection-card-page';
 import { ResourcesPage } from '../model/pages/resources-page';
 import { VolumesPage } from '../model/pages/volumes-page';
@@ -41,12 +42,19 @@ let kindResourceCard: ResourceConnectionCardPage;
 
 const skipKindInstallation = process.env.SKIP_KIND_INSTALL ? process.env.SKIP_KIND_INSTALL : false;
 
-test.beforeAll(async ({ runner, page, welcomePage }) => {
+test.beforeAll(async ({ runner, page, welcomePage, navigationBar }) => {
   runner.setVideoAndTraceName('kind-e2e');
   await welcomePage.handleWelcomePage(true);
   await waitForPodmanMachineStartup(page);
   resourcesPage = new ResourcesPage(page);
   kindResourceCard = new ResourceConnectionCardPage(page, RESOURCE_NAME);
+  if (process.env.GITHUB_ACTIONS && process.env.RUNNER_OS === 'Linux') {
+    const settingsBar = await navigationBar.openSettings();
+    const kubePage = await settingsBar.openTabPage(KubeContextPage);
+    await playExpect(kubePage.heading).toBeVisible();
+
+    await kubePage.setDefaultContext('kind-kind-cluster');
+  }
 });
 
 test.afterAll(async ({ runner, page }) => {
@@ -90,6 +98,7 @@ test.describe.serial('Kind End-to-End Tests', { tag: '@k8s_e2e' }, () => {
       'Tests suite should not run on Linux platform',
     );
     test('Create a Kind cluster', async ({ page }) => {
+      test.skip(!!skipKindInstallation, 'Skipping Kind installation');
       test.setTimeout(CLUSTER_CREATION_TIMEOUT);
       await createKindCluster(page, CLUSTER_NAME, true, CLUSTER_CREATION_TIMEOUT);
     });

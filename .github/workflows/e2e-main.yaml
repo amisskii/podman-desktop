@@ -104,7 +104,7 @@ jobs:
       - name: Install Kind CLI 
         uses: helm/kind-action@v1.10.0
         with: 
-          install_only: true
+          cluster_name: 'kind-cluster'
             
       - name: Run E2E tests in Production Mode
         env:
@@ -113,8 +113,6 @@ jobs:
           SKIP_KIND_INSTALL: 'true'
           ELECTRON_ENABLE_INSPECT: true
         run: |
-          sudo sysctl fs.inotify.max_user_watches=524288
-          sudo sysctl fs.inotify.max_user_instances=512
           echo "Compiling the Podman Desktop in production mode"
           pnpm compile:current --linux dir
           path=$(realpath ./dist/linux-unpacked/podman-desktop)
