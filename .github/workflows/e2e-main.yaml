@@ -114,7 +114,7 @@ jobs:
 
       - name: Create Kind Cluster
         uses: helm/kind-action@v1.10.0
-        if: ${{ env.NPM_TARGET == 'test:e2e' || env.NPM_TARGET == 'test:e2e:all' }}
+        if: ${{ env.NPM_TARGET == 'test:e2e:k8s' || env.NPM_TARGET == 'test:e2e:all' }}
         with: 
           cluster_name: 'kind-cluster'
         
