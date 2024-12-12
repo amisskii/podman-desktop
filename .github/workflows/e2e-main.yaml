@@ -111,6 +111,12 @@ jobs:
 
       - name: Execute pnpm
         run: pnpm install
+
+      - name: Create Kind Cluster
+        uses: helm/kind-action@v1.10.0
+        if: ${{ env.NPM_TARGET == 'test:e2e' || env.NPM_TARGET == 'test:e2e:all' }}
+        with: 
+          cluster_name: 'kind-cluster'
         
       - name: Run E2E tests in Production Mode
         env:
