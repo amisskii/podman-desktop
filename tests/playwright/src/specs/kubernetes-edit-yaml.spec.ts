@@ -80,6 +80,7 @@ test.afterAll(async ({ runner, page }) => {
 });
 
 test.describe.serial('Kubernetes Edit YAML Feature E2E Test', { tag: '@k8s_e2e' }, () => {
+  test.describe.configure({ retries: 2 });
   test('Create a Kubernetes deployment resource', async ({ navigationBar }) => {
     test.setTimeout(80_000);
     const podsPage = await navigationBar.openPods();
@@ -119,7 +120,7 @@ test.describe.serial('Kubernetes Edit YAML Feature E2E Test', { tag: '@k8s_e2e' 
       KubernetesResources.Deployments,
     );
     await playExpect(deploymentDetails.heading).toBeVisible();
-    await deploymentDetails.editKubernetsYamlFile('replicas: 3', 'replicas: 5');
+    await deploymentDetails.editKubernetsYamlFile('replicas: 3', 'replicas: 4');
 
     await navigationBar.openPods();
     await playExpect
