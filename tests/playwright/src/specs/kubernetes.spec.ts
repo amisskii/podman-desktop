@@ -27,7 +27,7 @@ import { expect as playExpect, test } from '../utility/fixtures';
 import { deletePod, ensureCliInstalled, handleConfirmationDialog } from '../utility/operations';
 import { waitForPodmanMachineStartup } from '../utility/wait';
 
-const CLUSTER_NAME: string = 'kind-cluster';
+const CLUSTER_NAME: string = 'kind-test';
 const CLUSTER_CREATION_TIMEOUT: number = 300_000;
 const KIND_NODE: string = `${CLUSTER_NAME}-control-plane`;
 const RESOURCE_NAME: string = 'kind';
