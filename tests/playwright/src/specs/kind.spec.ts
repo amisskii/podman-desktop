@@ -32,7 +32,7 @@ import { waitForPodmanMachineStartup } from '../utility/wait';
 
 const RESOURCE_NAME: string = 'kind';
 const EXTENSION_LABEL: string = 'podman-desktop.kind';
-const CLUSTER_NAME: string = 'kind-cluster';
+const CLUSTER_NAME: string = 'cluster-test';
 const KIND_NODE: string = `${CLUSTER_NAME}-control-plane`;
 const CLUSTER_CREATION_TIMEOUT: number = 300_000;
 let resourcesPage: ResourcesPage;
