@@ -17,6 +17,7 @@
  ***********************************************************************/
 
 import path from 'node:path';
+import { env } from 'node:process';
 import { fileURLToPath } from 'node:url';
 
 import { PlayYamlRuntime } from '../model/core/operations';
@@ -57,6 +58,7 @@ const skipKindInstallation = process.env.SKIP_KIND_INSTALL === 'true';
 test.beforeAll(async ({ runner, welcomePage, page, navigationBar }) => {
   test.setTimeout(350_000);
   runner.setVideoAndTraceName('kubernetes-e2e');
+  env.KEEP_VIDEOS_ON_PASS = 'true';
 
   await welcomePage.handleWelcomePage(true);
   await waitForPodmanMachineStartup(page);
