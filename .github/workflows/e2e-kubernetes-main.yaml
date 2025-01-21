@@ -100,6 +100,12 @@ jobs:
 
       - name: Execute pnpm
         run: pnpm install
+
+      - name: set kind provider env. var.
+        run: export KIND_EXPERIMENTAL_PROVIDER=podman
+      
+      - name: Kind Cluster
+        uses: helm/kind-action@v1.12.0
             
       - name: Run E2E kubernetes tests in Production Mode
         env:
