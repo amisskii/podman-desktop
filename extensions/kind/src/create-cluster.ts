@@ -157,6 +157,11 @@ export async function createCluster(
   // ok we need to write the file
   await fs.promises.writeFile(tmpFilePath, kindClusterConfig, 'utf8');
 
+  console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
+  const configFileContent = await fs.promises.readFile(tmpFilePath, 'utf8');
+  console.log(`Config file content:\n${configFileContent}`);
+  console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
+
   // update PATH to include kind
   env.PATH = getKindPath() ?? '';
 
@@ -167,6 +172,11 @@ export async function createCluster(
     httpsHostPort,
     ingressController,
   };
+
+  // Log the command to the console before executing it
+  console.log(`%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%`);
+  console.log(`Executing command: ${kindCli} create cluster --config ${tmpFilePath}`);
+  console.log(`%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%`);
 
   // now execute the command to create the cluster
   const startTime = performance.now();
