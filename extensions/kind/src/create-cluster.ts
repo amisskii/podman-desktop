@@ -175,6 +175,7 @@ export async function createCluster(
 
   // Log the command to the console before executing it
   console.log(`%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%`);
+  console.log(env['KIND_EXPERIMENTAL_PROVIDER']);
   console.log(`Executing command: ${kindCli} create cluster --config ${tmpFilePath}`);
   console.log(`%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%`);
 
@@ -183,6 +184,9 @@ export async function createCluster(
   try {
     await extensionApi.process.exec(kindCli, ['create', 'cluster', '--config', tmpFilePath], { env, logger, token });
     if (ingressController) {
+      console.log('###################################################');
+      console.log('ingressssssssssssssssssssssssssssssssssssssssssssssss');
+      console.log('####################################################');
       logger?.log('Creating ingress controller resources');
       await setupIngressController(clusterName);
     }
