@@ -68,13 +68,10 @@ export class CreateKindClusterPage extends CreateClusterBasePage {
 
       if (providerType) {
         await playExpect(this.providerTypeCombobox).toBeVisible();
-        const providerTypeOptions = await this.providerTypeCombobox.locator('option').allInnerTexts();
-        if (providerTypeOptions.includes(providerType)) {
-          await this.providerTypeCombobox.selectOption({ value: providerType });
-          await playExpect(this.providerTypeCombobox).toHaveValue(providerType);
-        } else {
-          throw new Error(`${providerType} doesn't exist`);
-        }
+        await this.providerTypeCombobox.click();
+        const providerTypeButton = this.page.getByRole('button', { name: providerType, exact: true });
+        await playExpect(providerTypeButton).toBeEnabled();
+        await providerTypeButton.click();
       }
 
       if (httpPort) {
