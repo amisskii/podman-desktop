@@ -108,6 +108,7 @@ jobs:
           SKIP_KIND_INSTALL: 'true'
           ELECTRON_ENABLE_INSPECT: true
         run: |
+          export KIND_EXPERIMENTAL_PROVIDER=podman
           echo "Compiling the Podman Desktop in production mode"
           pnpm compile:current --linux dir
           path=$(realpath ./dist/linux-unpacked/podman-desktop)
