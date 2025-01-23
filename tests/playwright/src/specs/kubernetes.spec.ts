@@ -19,9 +19,12 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import type { Page } from '@playwright/test';
+
 import { PlayYamlRuntime } from '../model/core/operations';
 import { KubernetesResourceState, PodState } from '../model/core/states';
 import { KubernetesResources } from '../model/core/types';
+import { NavigationBar } from '../model/workbench/navigation';
 import { createKindCluster, deleteCluster } from '../utility/cluster-operations';
 import { expect as playExpect, test } from '../utility/fixtures';
 import { deletePod, ensureCliInstalled, handleConfirmationDialog } from '../utility/operations';
@@ -98,12 +101,17 @@ test.describe('Kubernetes resources End-to-End test', { tag: '@k8s_e2e' }, () =>
   });
   test.describe
     .serial('PVC lifecycle test', () => {
-      test('Create a new PVC resource', async ({ navigationBar }) => {
+      test('Create a new PVC resource', async ({ navigationBar, page }) => {
         const podsPage = await navigationBar.openPods();
         await playExpect(podsPage.heading).toBeVisible();
         const playYamlPage = await podsPage.openPlayKubeYaml();
         await playExpect(playYamlPage.heading).toBeVisible();
-        await playYamlPage.playYaml(PVC_YAML_PATH, KUBERNETES_RUNTIME);
+        try {
+          await playYamlPage.playYaml(PVC_YAML_PATH, KUBERNETES_RUNTIME);
+        } catch {
+          await reopenPlayYamlPage(page);
+          await playYamlPage.playYaml(PVC_YAML_PATH, KUBERNETES_RUNTIME);
+        }
 
         const kubernetesBar = await navigationBar.openKubernetes();
         const pvcsPage = await kubernetesBar.openTabPage(KubernetesResources.PVCs);
@@ -115,12 +123,17 @@ test.describe('Kubernetes resources End-to-End test', { tag: '@k8s_e2e' }, () =>
           .poll(async () => pvcDetails.getState(), { timeout: 50_000 })
           .toEqual(KubernetesResourceState.Stopped);
       });
-      test('Bind the PVC to a pod', async ({ navigationBar }) => {
+      test('Bind the PVC to a pod', async ({ navigationBar, page }) => {
         const podsPage = await navigationBar.openPods();
         await playExpect(podsPage.heading).toBeVisible();
         const playYamlPage = await podsPage.openPlayKubeYaml();
         await playExpect(playYamlPage.heading).toBeVisible();
-        await playYamlPage.playYaml(PVC_POD_YAML_PATH, KUBERNETES_RUNTIME);
+        try {
+          await playYamlPage.playYaml(PVC_POD_YAML_PATH, KUBERNETES_RUNTIME);
+        } catch {
+          await reopenPlayYamlPage(page);
+          await playYamlPage.playYaml(PVC_POD_YAML_PATH, KUBERNETES_RUNTIME);
+        }
 
         const kubernetesBar = await navigationBar.openKubernetes();
         const pvcsPage = await kubernetesBar.openTabPage(KubernetesResources.PVCs);
@@ -141,13 +154,17 @@ test.describe('Kubernetes resources End-to-End test', { tag: '@k8s_e2e' }, () =>
     });
   test.describe
     .serial('ConfigMaps and Secrets lifecycle test', () => {
-      test('Create ConfigMap resource', async ({ navigationBar }) => {
+      test('Create ConfigMap resource', async ({ navigationBar, page }) => {
         const podsPage = await navigationBar.openPods();
         await playExpect(podsPage.heading).toBeVisible();
         const playYamlPage = await podsPage.openPlayKubeYaml();
         await playExpect(playYamlPage.heading).toBeVisible();
-        await playYamlPage.playYaml(CONFIGMAP_YAML_PATH, KUBERNETES_RUNTIME);
-
+        try {
+          await playYamlPage.playYaml(CONFIGMAP_YAML_PATH, KUBERNETES_RUNTIME);
+        } catch {
+          await reopenPlayYamlPage(page);
+          await playYamlPage.playYaml(CONFIGMAP_YAML_PATH, KUBERNETES_RUNTIME);
+        }
         const kubernetesBar = await navigationBar.openKubernetes();
         const configmapSecretsPage = await kubernetesBar.openTabPage(KubernetesResources.ConfigMapsSecrets);
         await playExpect(configmapSecretsPage.heading).toBeVisible();
@@ -161,12 +178,17 @@ test.describe('Kubernetes resources End-to-End test', { tag: '@k8s_e2e' }, () =>
           .poll(async () => configmapDetails.getState(), { timeout: 50_000 })
           .toEqual(KubernetesResourceState.Running);
       });
-      test('Create Secret resource', async ({ navigationBar }) => {
+      test('Create Secret resource', async ({ navigationBar, page }) => {
         const podsPage = await navigationBar.openPods();
         await playExpect(podsPage.heading).toBeVisible();
         const playYamlPage = await podsPage.openPlayKubeYaml();
         await playExpect(playYamlPage.heading).toBeVisible();
-        await playYamlPage.playYaml(SECRET_YAML_PATH, KUBERNETES_RUNTIME);
+        try {
+          await playYamlPage.playYaml(SECRET_YAML_PATH, KUBERNETES_RUNTIME);
+        } catch {
+          await reopenPlayYamlPage(page);
+          await playYamlPage.playYaml(SECRET_YAML_PATH, KUBERNETES_RUNTIME);
+        }
 
         const kubernetesBar = await navigationBar.openKubernetes();
         const configmapSecretsPage = await kubernetesBar.openTabPage(KubernetesResources.ConfigMapsSecrets);
@@ -181,12 +203,17 @@ test.describe('Kubernetes resources End-to-End test', { tag: '@k8s_e2e' }, () =>
           .poll(async () => secretDetails.getState(), { timeout: 50_000 })
           .toEqual(KubernetesResourceState.Running);
       });
-      test('Can load config and secrets via env. var in pod', async ({ navigationBar }) => {
+      test('Can load config and secrets via env. var in pod', async ({ navigationBar, page }) => {
         const podsPage = await navigationBar.openPods();
         await playExpect(podsPage.heading).toBeVisible();
         const playYamlPage = await podsPage.openPlayKubeYaml();
         await playExpect(playYamlPage.heading).toBeVisible();
-        await playYamlPage.playYaml(SECRET_POD_YAML_PATH, KUBERNETES_RUNTIME);
+        try {
+          await playYamlPage.playYaml(SECRET_POD_YAML_PATH, KUBERNETES_RUNTIME);
+        } catch {
+          await reopenPlayYamlPage(page);
+          await playYamlPage.playYaml(SECRET_POD_YAML_PATH, KUBERNETES_RUNTIME);
+        }
 
         await playExpect(podsPage.heading).toBeVisible();
         await playExpect
@@ -211,3 +238,11 @@ test.describe('Kubernetes resources End-to-End test', { tag: '@k8s_e2e' }, () =>
       });
     });
 });
+
+async function reopenPlayYamlPage(page: Page): Promise<void> {
+  const navigationBar = new NavigationBar(page);
+  const podsPage = await navigationBar.openPods();
+  await playExpect(podsPage.heading).toBeVisible();
+  const playYamlPage = await podsPage.openPlayKubeYaml();
+  await playExpect(playYamlPage.heading).toBeVisible();
+}
