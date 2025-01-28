@@ -61,6 +61,9 @@ test.beforeAll(async ({ runner, welcomePage, page, navigationBar }) => {
   test.setTimeout(350_000);
   runner.setVideoAndTraceName('kubernetes-e2e');
 
+  const env: { [key: string]: string } = process.env as { [key: string]: string };
+  env.KEEP_VIDEOS_ON_PASS = 'true';
+
   await welcomePage.handleWelcomePage(true);
   await waitForPodmanMachineStartup(page);
   if (!skipKindInstallation) {
