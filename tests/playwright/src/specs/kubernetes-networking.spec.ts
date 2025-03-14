@@ -43,6 +43,8 @@ const KUBERNETES_CONTEXT = `kind-${CLUSTER_NAME}`;
 const KUBERNETES_NAMESPACE = 'default';
 const DEPLOYMENT_NAME = 'test-deployment-resource';
 const SERVICE_NAME = 'test-service-resource';
+const INGERSS_NAME = 'test-ingress-resource';
+const ADDRESS = 'http://test-service-resource.default.svc.cluster.local:8080';
 const KUBERNETES_RUNTIME = {
   runtime: PlayYamlRuntime.Kubernetes,
   kubernetesContext: KUBERNETES_CONTEXT,
@@ -58,6 +60,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DEPLOYMENT_YAML_PATH = path.resolve(__dirname, '..', '..', 'resources', 'kubernetes', `${DEPLOYMENT_NAME}.yaml`);
 const SERVICE_YAML_PATH = path.resolve(__dirname, '..', '..', 'resources', 'kubernetes', `${SERVICE_NAME}.yaml`);
+const INGRESS_YAML_PATH = path.resolve(__dirname, '..', '..', 'resources', 'kubernetes', `${INGERSS_NAME}.yaml`);
 
 const skipKindInstallation = process.env.SKIP_KIND_INSTALL === 'true';
 const providerTypeGHA = process.env.KIND_PROVIDER_GHA ?? '';
@@ -139,5 +142,27 @@ test.describe.serial('Kubernetes service resource E2E Test', { tag: '@k8s_e2e' }
     await deleteKubernetesResource(page, KubernetesResources.PortForwarding, SERVICE_NAME);
     await deleteKubernetesResource(page, KubernetesResources.Services, SERVICE_NAME);
     await deleteKubernetesResource(page, KubernetesResources.Deployments, DEPLOYMENT_NAME);
+  });
+});
+test.describe('ingress', () => {
+  test('Create and verify a running Kubernetes deployment', async ({ page }) => {
+    test.setTimeout(80_000);
+    await createKubernetesResource(
+      page,
+      KubernetesResources.IngeressesRoutes,
+      INGERSS_NAME,
+      INGRESS_YAML_PATH,
+      KUBERNETES_RUNTIME,
+    );
+    await checkKubernetesResourceState(
+      page,
+      KubernetesResources.IngeressesRoutes,
+      INGERSS_NAME,
+      KubernetesResourceState.Running,
+      80_000,
+    );
+  });
+  test('Verify ingress functionality via port forwarding', async () => {
+    await verifyLocalPortResponse(ADDRESS, RESPONSE_MESSAGE);
   });
 });
