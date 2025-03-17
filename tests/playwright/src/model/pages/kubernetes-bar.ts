@@ -41,6 +41,8 @@ export class KubernetesBar {
         return new KubernetesResourcePage(this.page, 'PVCs');
       case 'ConfigMaps & Secrets':
         return new KubernetesResourcePage(this.page, 'Configmaps and Secrets');
+      case 'Ingresses & Routes':
+        return new KubernetesResourcePage(this.page, 'ingresses and routes');
       default:
         return new KubernetesResourcePage(this.page, kubernetesResource);
     }
