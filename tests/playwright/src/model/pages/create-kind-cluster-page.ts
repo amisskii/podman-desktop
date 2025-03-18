@@ -30,6 +30,7 @@ export class CreateKindClusterPage extends CreateClusterBasePage {
   readonly httpPort: Locator;
   readonly httpsPort: Locator;
   readonly containerImage: Locator;
+  readonly pathToKindConfigFile: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -44,6 +45,9 @@ export class CreateKindClusterPage extends CreateClusterBasePage {
     this.httpPort = this.clusterPropertiesInformation.getByLabel('HTTP Port');
     this.httpsPort = this.clusterPropertiesInformation.getByLabel('HTTPS Port');
     this.containerImage = this.clusterPropertiesInformation.getByPlaceholder('Leave empty for using latest.');
+    this.pathToKindConfigFile = this.clusterPropertiesInformation.getByRole('textbox', {
+      name: 'Custom path to Kind config file (Default is blank)',
+    });
   }
 
   public async createClusterDefault(clusterName: string = 'kind-cluster', timeout?: number): Promise<void> {
@@ -60,11 +64,16 @@ export class CreateKindClusterPage extends CreateClusterBasePage {
 
   public async createClusterParametrized(
     clusterName: string = 'kind-cluster',
-    { providerType, httpPort, httpsPort, useIngressController, containerImage }: KindClusterOptions = {},
+    { pathToYaml, providerType, httpPort, httpsPort, useIngressController, containerImage }: KindClusterOptions = {},
     timeout?: number,
   ): Promise<void> {
     return test.step('Create parametrized cluster', async () => {
       await fillTextbox(this.clusterNameField, clusterName);
+
+      if (pathToYaml) {
+        await this.pathToKindConfigFile.evaluate(node => node.removeAttribute('readonly'));
+        await this.pathToKindConfigFile.fill(pathToYaml);
+      }
 
       if (providerType) {
         try {

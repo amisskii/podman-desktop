@@ -24,12 +24,7 @@ import { KubernetesResourceState } from '../model/core/states';
 import { KubernetesResources } from '../model/core/types';
 import { createKindCluster, deleteCluster } from '../utility/cluster-operations';
 import { test } from '../utility/fixtures';
-import {
-  checkKubernetesResourceState,
-  createKubernetesResource,
-  deleteKubernetesResource,
-  verifyLocalPortResponse,
-} from '../utility/kubernetes';
+import { checkKubernetesResourceState, createKubernetesResource, verifyLocalPortResponse } from '../utility/kubernetes';
 import { ensureCliInstalled } from '../utility/operations';
 import { waitForPodmanMachineStartup } from '../utility/wait';
 
@@ -40,7 +35,7 @@ const RESOURCE_NAME: string = 'kind';
 const KUBERNETES_CONTEXT = `kind-${CLUSTER_NAME}`;
 const KUBERNETES_NAMESPACE = 'default';
 
-const DEPLOYMENT_NAME = 'test-deployment-resource';
+const POD_NAME = 'test-pod-networking';
 const SERVICE_NAME = 'test-service-resource';
 const INGERSS_NAME = 'test-ingress-resource';
 const KUBERNETES_RUNTIME = {
@@ -50,12 +45,12 @@ const KUBERNETES_RUNTIME = {
 };
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const DEPLOYMENT_YAML_PATH = path.resolve(__dirname, '..', '..', 'resources', 'kubernetes', `${DEPLOYMENT_NAME}.yaml`);
+const POD_YAML_PATH = path.resolve(__dirname, '..', '..', 'resources', 'kubernetes', `${POD_NAME}.yaml`);
 const SERVICE_YAML_PATH = path.resolve(__dirname, '..', '..', 'resources', 'kubernetes', `${SERVICE_NAME}.yaml`);
 const INGRESS_YAML_PATH = path.resolve(__dirname, '..', '..', 'resources', 'kubernetes', `${INGERSS_NAME}.yaml`);
+const KIND_CONFIG_YAMP_PATH = path.resolve(__dirname, '..', '..', 'resources', 'kubernetes', `kind-config.yaml`);
 
-//Contour ingress controller is exposed on localgost:9090
-const FORWARD_ADRESS: string = `http://localhost:9090/`;
+const FORWARD_ADRESS: string = `http://localhost:8080/`;
 const RESPONSE_MESSAGE: string = 'Welcome to nginx!';
 
 const skipKindInstallation = process.env.SKIP_KIND_INSTALL === 'true';
@@ -76,11 +71,14 @@ test.beforeAll(async ({ runner, welcomePage, page, navigationBar }) => {
 
   if (process.env.GITHUB_ACTIONS && process.env.RUNNER_OS === 'Linux') {
     await createKindCluster(page, CLUSTER_NAME, false, CLUSTER_CREATION_TIMEOUT, {
+      pathToYaml: KIND_CONFIG_YAMP_PATH,
       providerType: providerTypeGHA,
       useIngressController: true,
     });
   } else {
-    await createKindCluster(page, CLUSTER_NAME, true, CLUSTER_CREATION_TIMEOUT);
+    await createKindCluster(page, CLUSTER_NAME, false, CLUSTER_CREATION_TIMEOUT, {
+      pathToYaml: KIND_CONFIG_YAMP_PATH,
+    });
   }
 });
 
@@ -95,20 +93,14 @@ test.afterAll(async ({ runner, page }) => {
 
 test.describe.serial('Kubernetes newtworking E2E tests', { tag: '@k8s_e2e' }, () => {
   test('Create and verify a running Kubernetes deployment', async ({ page }) => {
-    test.setTimeout(80_000);
-    await createKubernetesResource(
-      page,
-      KubernetesResources.Deployments,
-      DEPLOYMENT_NAME,
-      DEPLOYMENT_YAML_PATH,
-      KUBERNETES_RUNTIME,
-    );
+    test.setTimeout(250_000);
+    await createKubernetesResource(page, KubernetesResources.Pods, POD_NAME, POD_YAML_PATH, KUBERNETES_RUNTIME);
     await checkKubernetesResourceState(
       page,
-      KubernetesResources.Deployments,
-      DEPLOYMENT_NAME,
+      KubernetesResources.Pods,
+      POD_NAME,
       KubernetesResourceState.Running,
-      80_000,
+      250_000,
     );
   });
   test('Create and verify a running Kubernetes service', async ({ page }) => {
@@ -144,13 +136,9 @@ test.describe.serial('Kubernetes newtworking E2E tests', { tag: '@k8s_e2e' }, ()
       KubernetesResourceState.Running,
       80_000,
     );
+    await page.waitForTimeout(40_000);
   });
   test(`Verify access to the ${SERVICE_NAME} service`, async () => {
     await verifyLocalPortResponse(FORWARD_ADRESS, RESPONSE_MESSAGE);
-  });
-  test('Delete Kubernetes resources', async ({ page }) => {
-    await deleteKubernetesResource(page, KubernetesResources.IngeressesRoutes, INGERSS_NAME);
-    await deleteKubernetesResource(page, KubernetesResources.Services, SERVICE_NAME);
-    await deleteKubernetesResource(page, KubernetesResources.Deployments, DEPLOYMENT_NAME);
   });
 });

@@ -3,9 +3,14 @@ kind: Ingress
 metadata:
   name: test-ingress-resource
 spec:
-  defaultBackend:
-    service:
-      name: test-service-resource
-      port:
-        number: 8080
-  
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: test-service-resource
+            port:
+              number: 8080
+ 

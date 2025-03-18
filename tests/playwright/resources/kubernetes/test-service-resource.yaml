@@ -5,7 +5,7 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: test-deployment-resource
+    app: test-pod-networking
   ports:
     - port: 8080
       targetPort: 80
