@@ -142,7 +142,6 @@ test.describe.serial('Kubernetes newtworking E2E tests', { tag: '@k8s_e2e' }, ()
       KubernetesResourceState.Running,
       80_000,
     );
-    await page.waitForTimeout(60_000);
   });
   test(`Verify access to the ${SERVICE_NAME} service`, async () => {
     await verifyLocalPortResponse(FORWARD_ADRESS, RESPONSE_MESSAGE);
