@@ -35,7 +35,7 @@ const RESOURCE_NAME: string = 'kind';
 const KUBERNETES_CONTEXT = `kind-${CLUSTER_NAME}`;
 const KUBERNETES_NAMESPACE = 'default';
 
-const POD_NAME = 'test-pod-networking';
+const DEPLOYMENT_NAME = 'test-deployment-resource';
 const SERVICE_NAME = 'test-service-resource';
 const INGERSS_NAME = 'test-ingress-resource';
 const KUBERNETES_RUNTIME = {
@@ -45,7 +45,7 @@ const KUBERNETES_RUNTIME = {
 };
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const POD_YAML_PATH = path.resolve(__dirname, '..', '..', 'resources', 'kubernetes', `${POD_NAME}.yaml`);
+const DEPLOYMENT_YAML_PATH = path.resolve(__dirname, '..', '..', 'resources', 'kubernetes', `${DEPLOYMENT_NAME}.yaml`);
 const SERVICE_YAML_PATH = path.resolve(__dirname, '..', '..', 'resources', 'kubernetes', `${SERVICE_NAME}.yaml`);
 const INGRESS_YAML_PATH = path.resolve(__dirname, '..', '..', 'resources', 'kubernetes', `${INGERSS_NAME}.yaml`);
 const KIND_CONFIG_YAMP_PATH = path.resolve(__dirname, '..', '..', 'resources', 'kubernetes', `kind-config.yaml`);
@@ -94,11 +94,17 @@ test.afterAll(async ({ runner, page }) => {
 test.describe.serial('Kubernetes newtworking E2E tests', { tag: '@k8s_e2e' }, () => {
   test('Create and verify a running Kubernetes deployment', async ({ page }) => {
     test.setTimeout(250_000);
-    await createKubernetesResource(page, KubernetesResources.Pods, POD_NAME, POD_YAML_PATH, KUBERNETES_RUNTIME);
+    await createKubernetesResource(
+      page,
+      KubernetesResources.Deployments,
+      DEPLOYMENT_NAME,
+      DEPLOYMENT_YAML_PATH,
+      KUBERNETES_RUNTIME,
+    );
     await checkKubernetesResourceState(
       page,
-      KubernetesResources.Pods,
-      POD_NAME,
+      KubernetesResources.Deployments,
+      DEPLOYMENT_NAME,
       KubernetesResourceState.Running,
       250_000,
     );
@@ -136,7 +142,7 @@ test.describe.serial('Kubernetes newtworking E2E tests', { tag: '@k8s_e2e' }, ()
       KubernetesResourceState.Running,
       80_000,
     );
-    await page.waitForTimeout(40_000);
+    await page.waitForTimeout(60_000);
   });
   test(`Verify access to the ${SERVICE_NAME} service`, async () => {
     await verifyLocalPortResponse(FORWARD_ADRESS, RESPONSE_MESSAGE);
