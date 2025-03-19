@@ -22,8 +22,9 @@ import { fileURLToPath } from 'node:url';
 import { PlayYamlRuntime } from '../model/core/operations';
 import { KubernetesResourceState } from '../model/core/states';
 import { KubernetesResources } from '../model/core/types';
+import type { ContainerDetailsPage } from '../model/pages/container-details-page';
 import { createKindCluster, deleteCluster } from '../utility/cluster-operations';
-import { test } from '../utility/fixtures';
+import { expect, test } from '../utility/fixtures';
 import { checkKubernetesResourceState, createKubernetesResource, verifyLocalPortResponse } from '../utility/kubernetes';
 import { ensureCliInstalled } from '../utility/operations';
 import { waitForPodmanMachineStartup } from '../utility/wait';
@@ -78,6 +79,7 @@ test.beforeAll(async ({ runner, welcomePage, page, navigationBar }) => {
   } else {
     await createKindCluster(page, CLUSTER_NAME, false, CLUSTER_CREATION_TIMEOUT, {
       pathToYaml: KIND_CONFIG_YAMP_PATH,
+      useIngressController: true,
     });
   }
 });
@@ -92,6 +94,18 @@ test.afterAll(async ({ runner, page }) => {
 });
 
 test.describe.serial('Kubernetes newtworking E2E tests', { tag: '@k8s_e2e' }, () => {
+  test('check container logs', async ({ navigationBar }) => {
+    test.setTimeout(160_000);
+    const containersPage = await navigationBar.openContainers();
+    await expect.poll(async () => containersPage.getContainerRowByName(KIND_NODE)).toBeTruthy();
+    const detailsPage = await containersPage.openContainersDetails(KIND_NODE);
+    await detailsPage.activateTab('Terminal');
+
+    await checkLogs(detailsPage, 'envoy', 'Running');
+    await checkLogs(detailsPage, 'contour', 'Running');
+    await checkLogs(detailsPage, 'contour-certgen', 'Completed');
+  });
+
   test('Create and verify a running Kubernetes deployment', async ({ page }) => {
     test.setTimeout(250_000);
     await createKubernetesResource(
@@ -147,3 +161,20 @@ test.describe.serial('Kubernetes newtworking E2E tests', { tag: '@k8s_e2e' }, ()
     await verifyLocalPortResponse(FORWARD_ADRESS, RESPONSE_MESSAGE);
   });
 });
+
+async function checkLogs(detailsPage: ContainerDetailsPage, podName: string, podStatus: string): Promise<void> {
+  await expect
+    .poll(
+      async () => {
+        await detailsPage.commandTerminal('kubectl get pods -n projectcontour');
+        const controllerPods = await detailsPage.validateTerminalOutput();
+        await detailsPage.commandTerminal('clear');
+
+        const matchingPod = controllerPods.find(row => row.includes(podName) && row.includes(podStatus));
+
+        return matchingPod ?? '';
+      },
+      { timeout: 120_000 },
+    )
+    .toContain(podStatus);
+}
