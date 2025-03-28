@@ -4,7 +4,7 @@ import { onMount, type Snippet } from 'svelte';
 import Fa from 'svelte-fa';
 
 interface Option {
-  value: unknown;
+  value: string;
   label: string;
 }
 
@@ -18,17 +18,19 @@ let {
   class: className = '',
   ariaInvalid = false,
   ariaLabel = '',
+  left = undefined,
   children = undefined,
 }: {
   id?: string;
   name?: string;
-  value?: unknown;
+  value?: string;
   disabled?: boolean;
-  onChange?: (val: unknown) => void;
+  onChange?: (val: string) => void;
   options?: Option[];
   class?: string;
   ariaInvalid?: boolean | 'grammar' | 'spelling';
   ariaLabel?: string;
+  left?: Snippet;
   children?: Snippet;
 } = $props();
 
@@ -46,7 +48,7 @@ onMount(() => {
 });
 
 $effect(() => {
-  selectLabel = options.find(o => o.value === value)?.label ?? (typeof value === 'string' ? (value as string) : '');
+  selectLabel = options.find(o => o.value === value)?.label ?? value ?? '';
 });
 
 function onKeyDown(e: KeyboardEvent): void {
@@ -129,7 +131,7 @@ function onEnter(i: number): void {
   highlightIndex = i;
 }
 
-function onSelect(e: Event, newValue: unknown): void {
+function onSelect(e: Event, newValue: string): void {
   onChange(newValue);
   value = newValue;
   close();
@@ -199,6 +201,7 @@ function onWindowClick(e: Event): void {
     name={name}
     onclick={toggleOpen}
     onkeydown={onKeyDown}>
+    {@render left?.()}
     <span class="grow">{selectLabel}</span>
     <div
       class:text-[var(--pd-input-field-stroke)]={!disabled}
