@@ -81,7 +81,14 @@ export async function deleteKubernetesResource(
     await kubernetesResourcePage.deleteKubernetesResource(resourceName);
     await handleConfirmationDialog(page);
     await playExpect
-      .poll(async () => await kubernetesResourcePage.getRowByName(resourceName), { timeout: timeout })
+      .poll(
+        async () => {
+          await kubernetesBar.openTabPage(KubernetesResources.Nodes);
+          await kubernetesBar.openTabPage(resourceType);
+          return await kubernetesResourcePage.getRowByName(resourceName);
+        },
+        { timeout: timeout },
+      )
       .not.toBeTruthy();
   });
 }
