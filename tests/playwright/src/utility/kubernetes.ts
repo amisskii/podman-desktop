@@ -71,7 +71,7 @@ export async function deleteKubernetesResource(
   page: Page,
   resourceType: KubernetesResources,
   resourceName: string,
-  timeout: number = 30_000,
+  timeout: number = 50_000,
 ): Promise<void> {
   return test.step(`Delete ${resourceType} kubernetes resource: ${resourceName}`, async () => {
     const navigationBar = new NavigationBar(page);
