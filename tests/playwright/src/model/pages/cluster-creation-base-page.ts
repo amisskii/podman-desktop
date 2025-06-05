@@ -58,6 +58,7 @@ export abstract class CreateClusterBasePage extends BasePage {
           await this.goBackButton.click();
         })(),
         this.errorMessage.waitFor({ state: 'visible', timeout: timeout }).then(async () => {
+          await this.page.waitForTimeout(20_000);
           throw new Error(`${await this.errorMessage.textContent()}`);
         }),
       ]);
