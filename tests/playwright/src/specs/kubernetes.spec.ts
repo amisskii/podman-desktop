@@ -129,23 +129,23 @@ test.afterAll(async ({ runner, page }) => {
   }
 });
 
-test.describe('Install kind cluster', () => {
-  test.describe.configure({ retries: 1 });
-  test('Install Kind cluster', async ({ page }, testInfo) => {
-    if (testInfo.retry) {
-      console.log('retry!!!!!!!!!!!');
-      try {
-        await deleteCluster(page, RESOURCE_NAME, KIND_NODE, CLUSTER_NAME);
-      } finally {
-        // eslint-disable-next-line
-        execSync(`kind delete cluster --name ${CLUSTER_NAME}`);
+test.describe.serial('Kubernetes resources End-to-End test', { tag: '@k8s_e2e' }, () => {
+  test.describe('Install kind cluster', () => {
+    test.describe.configure({ retries: 1 });
+    test('Install Kind cluster', async ({ page }, testInfo) => {
+      if (testInfo.retry) {
+        console.log('retry!!!!!!!!!!!');
+        try {
+          await deleteCluster(page, RESOURCE_NAME, KIND_NODE, CLUSTER_NAME);
+        } finally {
+          // eslint-disable-next-line
+          execSync(`kind delete cluster --name ${CLUSTER_NAME}`);
+        }
       }
-    }
-    await createKindCluster(page, CLUSTER_NAME, true, CLUSTER_CREATION_TIMEOUT);
+      await createKindCluster(page, CLUSTER_NAME, true, CLUSTER_CREATION_TIMEOUT);
+    });
   });
-});
 
-test.describe('Kubernetes resources End-to-End test', { tag: '@k8s_e2e' }, () => {
   test('Kubernetes Nodes test', async ({ page }) => {
     await checkKubernetesResourceState(page, KubernetesResources.Nodes, KIND_NODE, KubernetesResourceState.Running);
   });
