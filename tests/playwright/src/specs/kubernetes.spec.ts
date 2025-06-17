@@ -16,6 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
+import { execSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -102,7 +103,6 @@ const CRON_JOB_YAML_PATH: string = path.resolve(
 );
 
 const skipKindInstallation = process.env.SKIP_KIND_INSTALL === 'true';
-const providerTypeGHA = process.env.KIND_PROVIDER_GHA ?? '';
 
 test.skip(!canRunKindTests(), `This test can't run on a windows rootless machine`);
 
@@ -118,15 +118,6 @@ test.beforeAll(async ({ runner, welcomePage, page, navigationBar }) => {
 
     await ensureCliInstalled(page, 'Kind');
   }
-
-  if (process.env.GITHUB_ACTIONS && process.env.RUNNER_OS === 'Linux') {
-    await createKindCluster(page, CLUSTER_NAME, false, CLUSTER_CREATION_TIMEOUT, {
-      providerType: providerTypeGHA,
-      useIngressController: false,
-    });
-  } else {
-    await createKindCluster(page, CLUSTER_NAME, true, CLUSTER_CREATION_TIMEOUT);
-  }
 });
 
 test.afterAll(async ({ runner, page }) => {
@@ -136,6 +127,22 @@ test.afterAll(async ({ runner, page }) => {
   } finally {
     await runner.close();
   }
+});
+
+test.describe('Install kind cluster', () => {
+  test.describe.configure({ retries: 1 });
+  test('Install Kind cluster', async ({ page }, testInfo) => {
+    if (testInfo.retry) {
+      console.log('retry!!!!!!!!!!!');
+      try {
+        await deleteCluster(page, RESOURCE_NAME, KIND_NODE, CLUSTER_NAME);
+      } finally {
+        // eslint-disable-next-line
+        execSync(`kind delete cluster --name ${CLUSTER_NAME}`);
+      }
+    }
+    await createKindCluster(page, CLUSTER_NAME, true, CLUSTER_CREATION_TIMEOUT);
+  });
 });
 
 test.describe('Kubernetes resources End-to-End test', { tag: '@k8s_e2e' }, () => {
