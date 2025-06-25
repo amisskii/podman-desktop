@@ -1,0 +1,26 @@
+summary: playwright e2e testing plan
+
+discover:
+    how: fmf
+
+prepare:
+    - name: Install system dependencies
+      how: shell
+      script: |
+        sudo dnf update -y
+        sudo dnf install -y git make nodejs npm podman xvfb
+        sudo npm install -g pnpm
+
+    - name: Install node dependencies
+      how: shell
+      script: |
+        pnpm install --frozen-lockfile
+
+    - name: Build podman desktop
+      how: shell
+      script: |
+        pnpm run test:e2e:build
+
+execute:
+    how: tmt
+
