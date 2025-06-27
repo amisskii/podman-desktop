@@ -8,4 +8,18 @@ duration: 2h
 framework: shell
 test: |
   pnpm install
+  echo "Compiling the Podman Desktop in production mode"
+  cd $TMT_TREE
+  ls
+  pnpm compile:current --linux dir
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  ls
+  echo '!!!!!!!!!!!!!!!!!!!!'
+  cd dist/
+  ls
+  cd linux-unpacked/
+  echo "!!!!!!!!!!!!"
+  ls
+  export PODMAN_DESKTOP_BINARY="$TMT_TREE/dist/linux-unpacked/podman-desktop"
+  echo $PODMAN_DESKTOP_BINARY
   pnpm test:e2e:smoke
