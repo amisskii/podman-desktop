@@ -17,10 +17,5 @@ prepare:
         sudo dnf install -y git make nodejs npm podman
         sudo npm install -g pnpm
 
-    - name: Install node dependencies
-      how: shell
-      script: |
-        pnpm install
-
 execute:
     how: tmt

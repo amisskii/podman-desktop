@@ -7,4 +7,5 @@ tag:
 duration: 2h
 framework: shell
 test: |
+  pnpm install
   pnpm test:e2e:smoke
