@@ -1,0 +1,10 @@
+summary: Execute smoke playwright e2e tests.
+tag:
+  - podman-desktop
+  - e2e
+  - playwright
+  - smoke
+duration: 2h
+framework: shell
+test: |
+  pnpm test:e2e:smoke

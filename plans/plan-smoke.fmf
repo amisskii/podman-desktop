@@ -1,0 +1,26 @@
+# /path/to/your/project/plan.fmf
+
+summary: playwright e2e testing plan
+
+discover:
+    how: fmf
+
+environment: 
+   ELECTRON_ENABLE_INSPECT: true
+   TEST_PODMAN_MACHINE: true
+
+prepare:
+    - name: Install system dependencies
+      how: shell
+      script: |
+        sudo dnf update -y
+        sudo dnf install -y git make nodejs npm podman
+        sudo npm install -g pnpm
+
+    - name: Install node dependencies
+      how: shell
+      script: |
+        pnpm install
+
+execute:
+    how: tmt
