@@ -1,0 +1,45 @@
+summary: playwright e2e testing plan
+
+discover:
+    how: fmf
+
+provision: 
+  hardware: 
+    memory: ">= 16 GB"
+    cpu: 
+      cores: ">= 4"
+    disk:
+      - size: ">= 20 GB"
+
+
+environment: 
+   ELECTRON_ENABLE_INSPECT: true
+   TEST_PODMAN_MACHINE: true
+
+prepare:
+  - name: Install system dependencies
+    how: shell
+    script: |
+      sudo dnf update -y
+      sudo dnf install -y nodejs npm podman xorg-x11-server-Xvfb
+      sudo dnf install -y nss nspr atk at-spi2-atk cups libXcomposite libXdamage libXfixes libXrandr cairo pango alsa-lib
+      sudo dnf install -y gcc-c++
+      sudo dnf install -y gtk3
+      sudo dnf install -y passt
+      sudo npm install -g pnpm
+      echo "NodeJS version: $(node -v)"
+      echo "npm version $(npm -v)"
+      echo "pnpm Version: $(pnpm --version)"
+      echo "podman version $(podman -v)"
+
+  - name: Configure user to run Podman in rootless mode.
+    how: shell
+    script: |
+      sudo useradd -m -s /bin/bash pduser
+      sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 pduser
+      sudo passwd -d pduser
+      sudo loginctl enable-linger pduser
+      sudo chown -R pduser:pduser "$TMT_TREE"
+
+execute:
+    how: tmt 
