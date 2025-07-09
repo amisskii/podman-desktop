@@ -582,3 +582,13 @@ jobs:
           else
             echo "Windows and Mac updater test succeeded or was skipped..."
           fi
+
+  testing-farm-pr-check-smoke: 
+    name: testing-farm-test
+    runs-on: ubuntu-latest
+    steps: 
+      - name: PR check tests on Testing Farm 
+        uses: sclorg/testing-farm-as-github-action@v4
+        with:
+          api_key: ${{ secrets.TF_TOKEN }}
+          compose: Fedora-42

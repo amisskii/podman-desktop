@@ -1,0 +1,12 @@
+summary: Execute smoke playwright e2e tests.
+tag:
+  - podman-desktop
+  - smoke
+duration: 2h
+framework: shell
+test: |
+  sudo -u pduser bash -c "
+    cd $TMT_TREE
+    pnpm install
+    pnpm test:e2e:smoke
+  "
