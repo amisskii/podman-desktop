@@ -587,11 +587,9 @@ jobs:
     name: testing-farm-test
     runs-on: ubuntu-latest
     steps: 
-      - name: Create testing farm request
-        run: | 
-
       - name: PR check tests on Testing Farm 
         uses: sclorg/testing-farm-as-github-action@v4
         with:
           api_key: ${{ secrets.TF_TOKEN }}
           compose: Fedora-42
+          tmt_plan_filter: 'smoke'

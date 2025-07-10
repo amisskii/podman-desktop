@@ -31,15 +31,26 @@ prepare:
       echo "npm version $(npm -v)"
       echo "pnpm Version: $(pnpm --version)"
       echo "podman version $(podman -v)"
+      cd $TMT_TREE
+      pnpm install
 
   - name: Configure user to run Podman in rootless mode.
     how: shell
     script: |
       sudo useradd -m -s /bin/bash pduser
       sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 pduser
-      sudo passwd -d pduser
       sudo loginctl enable-linger pduser
       sudo chown -R pduser:pduser "$TMT_TREE"
 
 execute:
     how: tmt 
+
+/e2e-smoke:
+  summary: smoke e2e tests
+  discover+: 
+    filter: 'tag:smoke'
+
+/e2e: 
+  summary: all e2e tests except kubernetes
+  discover+: 
+    filter: 'tag:e2e'
