@@ -592,4 +592,4 @@ jobs:
         with:
           api_key: ${{ secrets.TF_TOKEN }}
           compose: Fedora-42
-          tmt_plan_filter: 'smoke'
+          tmt_plan_filter: '/plans/plan-smoke/e2e'
