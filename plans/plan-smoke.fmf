@@ -31,8 +31,6 @@ prepare:
       echo "npm version $(npm -v)"
       echo "pnpm Version: $(pnpm --version)"
       echo "podman version $(podman -v)"
-      cd $TMT_TREE
-      pnpm install
 
   - name: Configure user to run Podman in rootless mode.
     how: shell
