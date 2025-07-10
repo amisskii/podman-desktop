@@ -65,7 +65,6 @@ jobs:
   e2e-tests:
     name: Run All E2E tests on Testing Farm CI 
     runs-on: ubuntu-24.04
-    if: github.event.repository.fork == false
     permissions:
       checks: write # required for mikepenz/action-junit-report
     steps: 
