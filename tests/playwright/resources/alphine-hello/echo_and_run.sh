@@ -18,5 +18,6 @@
 
 #!/bin/sh
 echo "Hello There!"
+echo "Hello"
 /bin/sh
  
