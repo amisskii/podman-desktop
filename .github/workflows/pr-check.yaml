@@ -592,3 +592,5 @@ jobs:
         with:
           api_key: ${{ secrets.TF_TOKEN }}
           compose: Fedora-42
+          pull_request_status_name: test
+          create_issue_comment: true
