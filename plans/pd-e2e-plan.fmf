@@ -3,6 +3,9 @@ summary: playwright e2e testing plan
 discover:
     how: fmf
 
+execute:
+    how: tmt 
+
 provision: 
   hardware: 
     memory: ">= 16 GB"
@@ -11,9 +14,7 @@ provision:
     disk:
       - size: ">= 20 GB"
 
-
 environment: 
-   ELECTRON_ENABLE_INSPECT: true
    TEST_PODMAN_MACHINE: true
 
 prepare:
@@ -39,9 +40,6 @@ prepare:
       sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 pduser
       sudo loginctl enable-linger pduser
       sudo chown -R pduser:pduser "$TMT_TREE"
-
-execute:
-    how: tmt 
 
 /e2e-smoke:
   summary: smoke e2e tests
