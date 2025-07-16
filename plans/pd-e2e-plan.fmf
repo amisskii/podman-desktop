@@ -18,7 +18,6 @@ provision:
 
 environment: 
    TEST_PODMAN_MACHINE: true
-   SKIP_COMPOSE_ONBOARDING_TEST: true
 
 prepare:
   - name: Install system dependencies

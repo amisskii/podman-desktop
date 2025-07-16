@@ -5,6 +5,7 @@ duration: 2h
 framework: shell
 test: |
   sudo -u pduser bash -c "
+    export SKIP_COMPOSE_ONBOARDING_TEST=true
     cd $TMT_TREE
     pnpm install
     pnpm test:e2e:smoke
