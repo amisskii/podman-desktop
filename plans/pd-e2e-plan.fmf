@@ -28,11 +28,16 @@ prepare:
       sudo dnf install -y nss nspr atk at-spi2-atk cups libXcomposite libXdamage libXfixes libXrandr cairo pango alsa-lib
       sudo dnf install -y gcc-c++ gtk3
       sudo dnf install -y passt
+      sudo dnf install -y jq
       sudo npm install -g pnpm
       echo "NodeJS version: $(node -v)"
       echo "npm version: $(npm -v)"
       echo "pnpm Version: $(pnpm --version)"
       echo "podman version: $(podman -v)"
+      DOCKER_COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)
+      curl -Lo ./docker-compose https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-linux-x86_64
+      chmod +x ./docker-compose
+      sudo mv ./docker-compose /usr/local/bin/docker-compose
 
   - name: Configure user to run Podman in rootless mode.
     how: shell
