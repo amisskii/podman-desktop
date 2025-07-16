@@ -1,4 +1,4 @@
-summary: Execute smoke playwright e2e tests.
+summary: Execute all Playwright end-to-end test suites, excluding those related to Kubernetes.
 tag:
   - e2e
 duration: 2h

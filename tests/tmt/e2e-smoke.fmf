@@ -1,4 +1,4 @@
-summary: Execute smoke playwright e2e tests.
+summary: Execute smoke Playwright end-to-end tests. 
 tag:
   - smoke
 duration: 2h

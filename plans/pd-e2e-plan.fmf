@@ -1,4 +1,6 @@
-summary: playwright e2e testing plan
+summary: | 
+   This plan prepares an environment for running Playwright end-to-end tests against the Podman Desktop application. 
+   It includes steps to install all required system dependencies and configure a dedicated local user for running Podman in rootless mode. 
 
 discover:
     how: fmf
@@ -24,14 +26,13 @@ prepare:
       sudo dnf update -y
       sudo dnf install -y nodejs npm podman xorg-x11-server-Xvfb
       sudo dnf install -y nss nspr atk at-spi2-atk cups libXcomposite libXdamage libXfixes libXrandr cairo pango alsa-lib
-      sudo dnf install -y gcc-c++
-      sudo dnf install -y gtk3
+      sudo dnf install -y gcc-c++ gtk3
       sudo dnf install -y passt
       sudo npm install -g pnpm
       echo "NodeJS version: $(node -v)"
-      echo "npm version $(npm -v)"
+      echo "npm version: $(npm -v)"
       echo "pnpm Version: $(pnpm --version)"
-      echo "podman version $(podman -v)"
+      echo "podman version: $(podman -v)"
 
   - name: Configure user to run Podman in rootless mode.
     how: shell
@@ -42,11 +43,11 @@ prepare:
       sudo chown -R pduser:pduser "$TMT_TREE"
 
 /e2e-smoke:
-  summary: smoke e2e tests
+  summary:  Execute smoke Playwright end-to-end tests.
   discover+: 
     filter: 'tag:smoke'
 
 /e2e: 
-  summary: all e2e tests except kubernetes
+  summary: Execute all Playwright end-to-end test suites, excluding those related to Kubernetes.
   discover+: 
     filter: 'tag:e2e'
