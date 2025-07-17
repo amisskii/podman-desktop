@@ -61,7 +61,7 @@ prepare:
   discover+: 
     filter: 'tag:e2e'
 
-/e2e-kubernetes:
+/e2e-k8s:
   summary: 
   prepare+:
     - name: Install Kind CLI 
