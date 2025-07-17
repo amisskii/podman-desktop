@@ -60,3 +60,30 @@ prepare:
       script: bash $TMT_TREE/plans/scripts/install-docker-compose.sh
   discover+: 
     filter: 'tag:e2e'
+
+/e2e-kubernetes:
+  summary: 
+  prepare+:
+    - name: Install Kind CLI 
+      how: shell
+      script: bash $TMT_TREE/plans/scripts/install-kind.sh
+    - name: Install kubectl CLI 
+      how: shell
+      script: bash $TMT_TREE/plans/scripts/install-kubectl.sh
+  discover+:
+    filter: 'tag:k8s'
+  
+/e2e-all: 
+  summary: 
+  prepare+:
+    - name: Install docker compose
+      how: shell
+      script: bash $TMT_TREE/plans/scripts/install-docker-compose.sh
+    - name: Install Kind CLI 
+      how: shell
+      script: bash $TMT_TREE/plans/scripts/install-kind.sh
+    - name: Install kubectl CLI 
+      how: shell
+      script: bash $TMT_TREE/plans/scripts/install-kubectl.sh
+  discover+:
+    filter: 'tag:all'
