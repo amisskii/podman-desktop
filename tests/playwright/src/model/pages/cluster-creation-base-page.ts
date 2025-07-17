@@ -28,6 +28,7 @@ export abstract class CreateClusterBasePage extends BasePage {
   readonly goBackButton: Locator;
   readonly logsButton: Locator;
   readonly errorMessage: Locator;
+  readonly logs: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -44,27 +45,32 @@ export abstract class CreateClusterBasePage extends BasePage {
     this.errorMessage = this.content.getByRole('alert', {
       name: 'Error Message Content',
     });
+    this.logs = this.page.getByRole('term');
   }
 
   async createCluster(timeout: number = 300_000): Promise<void> {
     return test.step('Create cluster', async () => {
-      try {
-        await playExpect(this.clusterCreationButton).toBeEnabled();
-        await this.clusterCreationButton.click();
-        await this.logsButton.scrollIntoViewIfNeeded();
-        await this.logsButton.click();
-        await playExpect(this.goBackButton).toBeVisible({ timeout: timeout });
-        await this.goBackButton.click();
-      } catch (error) {
-        let errorText = '';
-        if (await this.errorMessage.count()) errorText = (await this.errorMessage.textContent()) ?? '';
+      await Promise.race([
+        (async (): Promise<void> => {
+          await playExpect(this.clusterCreationButton).toBeEnabled();
+          await this.clusterCreationButton.click();
+          await this.logsButton.scrollIntoViewIfNeeded();
 
-        if (error instanceof Error) {
-          throw new Error(`Failed to create cluster: ${error.message} with dialog error: ${errorText}`);
-        }
-
-        throw new Error(`Failed to create cluster: ${error} with dialog error: ${errorText}`);
-      }
+          await playExpect(this.goBackButton).toBeVisible({ timeout: timeout });
+          await this.goBackButton.click();
+        })(),
+        this.errorMessage.waitFor({ state: 'visible', timeout: timeout }).then(async () => {
+          await this.logsButton.click();
+          await playExpect(this.logs).toBeVisible();
+          const divs = await this.logs.locator('div').all();
+          console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+          for (const row of divs) {
+            console.log(await row.textContent());
+          }
+          console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+          throw new Error(`${await this.errorMessage.textContent()}`);
+        }),
+      ]);
     });
   }
 }
