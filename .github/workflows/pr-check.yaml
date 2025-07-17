@@ -584,7 +584,7 @@ jobs:
           fi
 
   testing-farm-pr-check-smoke: 
-    name: testing-farm-test
+    name: testing-farm-test-smoke
     runs-on: ubuntu-latest
     steps: 
       - name: PR check tests on Testing Farm 
@@ -596,21 +596,21 @@ jobs:
       
 
   testing-farm-pr-check-k8s: 
-    name: testing-farm-test
+    name: testing-farm-test-k8s
     runs-on: ubuntu-latest
     steps: 
-      - name: PR check tests on Testing Farm 
+      - name: PR check tests on Testing Farm k8s
         uses: sclorg/testing-farm-as-github-action@v4
         with:
           api_key: ${{ secrets.TF_TOKEN }}
           compose: Fedora-42
           tmt_plan_filter: 'name:/plans/pd-e2e-plan/e2e-k8s'
 
-  testing-farm-pr-check-k8s: 
-    name: testing-farm-test
+  testing-farm-pr-check-e2e: 
+    name: testing-farm-test-e2e
     runs-on: ubuntu-latest
     steps: 
-      - name: PR check tests on Testing Farm 
+      - name: PR check tests on Testing Farm e2e
         uses: sclorg/testing-farm-as-github-action@v4
         with:
           api_key: ${{ secrets.TF_TOKEN }}
