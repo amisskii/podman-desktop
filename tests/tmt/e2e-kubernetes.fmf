@@ -6,6 +6,9 @@ framework: shell
 test: |
   sudo -u pduser bash -c "
     cd $TMT_TREE
+    echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+    podman info | grep -i cgroup
+    echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
     pnpm install
     pnpm test:e2e:k8s
   "
