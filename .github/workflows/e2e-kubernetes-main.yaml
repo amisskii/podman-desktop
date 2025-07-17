@@ -50,6 +50,18 @@ permissions:
   contents: read
 
 jobs:
+  testing-farm-e2e-tests: 
+    name: Run k8s tests on testing farm
+    runs-on: ubuntu-24.04
+    permissions:
+      checks: write # required for mikepenz/action-junit-report
+    steps: 
+      - name: k8s tests Testing farm
+        uses: sclorg/testing-farm-as-github-action@v4
+        with:
+          api_key: ${{ secrets.TF_TOKEN }}
+          compose: Fedora-42
+          tmt_plan_filter: 'name:/plans/pd-e2e-plan/k8s'
   e2e-tests:
     name: Run All E2E tests
     runs-on: ubuntu-24.04
