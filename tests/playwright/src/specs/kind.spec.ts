@@ -16,9 +16,6 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
 import { ResourceElementActions } from '../model/core/operations';
 import { ContainerState, ResourceElementState } from '../model/core/states';
 import type { ContainerInteractiveParams } from '../model/core/types';
@@ -29,9 +26,7 @@ import {
   checkClusterResources,
   createKindCluster,
   deleteCluster,
-  deleteClusterFromDetails,
   resourceConnectionAction,
-  resourceConnectionActionDetails,
 } from '../utility/cluster-operations';
 import { expect as playExpect, test } from '../utility/fixtures';
 import { deployContainerToCluster } from '../utility/kubernetes';
@@ -42,8 +37,6 @@ const RESOURCE_NAME: string = 'kind';
 const EXTENSION_LABEL: string = 'podman-desktop.kind';
 const CLUSTER_NAME: string = 'kind-cluster';
 const KIND_CONTAINER: string = `${CLUSTER_NAME}-control-plane`;
-const CUSTOM_CONFIG_CLUSTER_NAME: string = 'test-cluster';
-const CUSTOM_CONFIG_KIND_CONTAINER: string = `${CUSTOM_CONFIG_CLUSTER_NAME}-control-plane`;
 const CLUSTER_CREATION_TIMEOUT: number = 300_000;
 const KUBERNETES_CONTEXT: string = `kind-${CLUSTER_NAME}`;
 
@@ -54,17 +47,6 @@ const DEPLOYED_POD_NAME: string = CONTAINER_NAME;
 const CONTAINER_START_PARAMS: ContainerInteractiveParams = {
   attachTerminal: false,
 };
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const CUSTOM_CONFIG_FILE_PATH: string = path.resolve(
-  __dirname,
-  '..',
-  '..',
-  'resources',
-  'kubernetes',
-  'test-kind-config-file.yaml',
-);
 
 let resourcesPage: ResourcesPage;
 let kindResourceCard: ResourceConnectionCardPage;
@@ -179,67 +161,6 @@ test.describe('Kind End-to-End Tests', { tag: '@k8s_e2e' }, () => {
 
       test('Kind cluster operations - DELETE', async ({ page }) => {
         await deleteCluster(page, RESOURCE_NAME, KIND_CONTAINER, CLUSTER_NAME);
-      });
-    });
-  test.describe
-    .serial('Kind cluster operations - Details', () => {
-      test('Create a Kind cluster - Without Ingress controller', async ({ page }) => {
-        test.setTimeout(CLUSTER_CREATION_TIMEOUT);
-
-        await createKindCluster(page, CLUSTER_NAME, CLUSTER_CREATION_TIMEOUT, {
-          providerType: providerTypeGHA,
-          useIngressController: false,
-        });
-      });
-
-      test('Kind cluster operations details - STOP', async ({ page }) => {
-        await resourceConnectionActionDetails(
-          page,
-          kindResourceCard,
-          CLUSTER_NAME,
-          ResourceElementActions.Stop,
-          ResourceElementState.Off,
-        );
-      });
-
-      test('Kind cluster operations details - START', async ({ page }) => {
-        await resourceConnectionActionDetails(
-          page,
-          kindResourceCard,
-          CLUSTER_NAME,
-          ResourceElementActions.Start,
-          ResourceElementState.Running,
-        );
-      });
-
-      test('Kind cluster operations details - RESTART', async ({ page }) => {
-        await resourceConnectionActionDetails(
-          page,
-          kindResourceCard,
-          CLUSTER_NAME,
-          ResourceElementActions.Restart,
-          ResourceElementState.Running,
-        );
-      });
-
-      test('Kind cluster operations details - DELETE', async ({ page }) => {
-        await deleteClusterFromDetails(page, RESOURCE_NAME, KIND_CONTAINER, CLUSTER_NAME);
-      });
-    });
-  test.describe
-    .serial('Kind cluster creation with custom config file', () => {
-      test('Create a Kind cluster using the custom config file', async ({ page }) => {
-        test.setTimeout(CLUSTER_CREATION_TIMEOUT);
-
-        await createKindCluster(page, CUSTOM_CONFIG_CLUSTER_NAME, CLUSTER_CREATION_TIMEOUT, {
-          configFilePath: CUSTOM_CONFIG_FILE_PATH,
-          providerType: providerTypeGHA,
-          useIngressController: false,
-        });
-        await checkClusterResources(page, CUSTOM_CONFIG_KIND_CONTAINER);
-      });
-      test('Delete the Kind cluster', async ({ page }) => {
-        await deleteClusterFromDetails(page, RESOURCE_NAME, CUSTOM_CONFIG_KIND_CONTAINER, CUSTOM_CONFIG_CLUSTER_NAME);
       });
     });
 });

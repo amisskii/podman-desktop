@@ -6,5 +6,6 @@ framework: shell
 test: |
   sudo -u pduser bash -c "
     cd $TMT_TREE
-    kind create cluster
+    pnpm install
+    pnpm test:e2e:k8s
   "
