@@ -6,6 +6,7 @@ framework: shell
 test: |
   sudo -u pduser bash -c "
     which podman
+    ulimit -a
     cd $TMT_TREE
     echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
     podman info | grep -i cgroup
