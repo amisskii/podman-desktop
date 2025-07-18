@@ -58,16 +58,9 @@ prepare:
   discover+: 
     filter: 'tag:smoke'
   prepare+: 
-    - name: Install docker compose 
-      how: shell
-      script: bash $TMT_TREE/plans/scripts/install-docker-compose.sh
 
 /e2e: 
   summary: Execute all Playwright end-to-end test suites, excluding those related to Kubernetes.
-  prepare+:
-    - name: Install docker compose
-      how: shell
-      script: bash $TMT_TREE/plans/scripts/install-docker-compose.sh
   discover+: 
     filter: 'tag:e2e'
 
