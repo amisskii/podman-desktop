@@ -600,7 +600,7 @@ jobs:
     name: testing-farm-test-e2e
     runs-on: ubuntu-latest
     steps: 
-      - name: PR check tests on Testing Farm k8s
+      - name: PR check tests on Testing Farm e2e
         uses: sclorg/testing-farm-as-github-action@v4
         with:
           api_key: ${{ secrets.TF_TOKEN }}
@@ -611,7 +611,7 @@ jobs:
     name: testing-farm-test-smoke
     runs-on: ubuntu-latest
     steps: 
-      - name: PR check tests on Testing Farm k8s
+      - name: PR check tests on Testing Farm smoke
         uses: sclorg/testing-farm-as-github-action@v4
         with:
           api_key: ${{ secrets.TF_TOKEN }}

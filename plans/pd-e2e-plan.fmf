@@ -57,7 +57,6 @@ prepare:
   summary:  Execute smoke Playwright end-to-end tests.
   discover+: 
     filter: 'tag:smoke'
-  prepare+: 
 
 /e2e: 
   summary: Execute all Playwright end-to-end test suites, excluding those related to Kubernetes.
