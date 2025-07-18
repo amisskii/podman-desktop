@@ -15,6 +15,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
+import { execSync } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
@@ -211,6 +212,9 @@ export async function createCluster(
         kubeconfigUpdated = true;
       },
     );
+
+    const podmanPath = execSync(`which podman`, { env: env }).toString().trim();
+    console.log(`Podman path ${podmanPath}`);
 
     // Execute the command to create the cluster
     await extensionApi.process.exec(
