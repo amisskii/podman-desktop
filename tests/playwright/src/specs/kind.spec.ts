@@ -52,7 +52,6 @@ let resourcesPage: ResourcesPage;
 let kindResourceCard: ResourceConnectionCardPage;
 
 const skipKindInstallation = process.env.SKIP_KIND_INSTALL === 'true';
-const providerTypeGHA = process.env.KIND_PROVIDER_GHA ?? '';
 
 test.skip(!canRunKindTests(), `This test can't run on a windows rootless machine`);
 
@@ -107,7 +106,7 @@ test.describe('Kind End-to-End Tests', { tag: '@k8s_e2e' }, () => {
         test.setTimeout(CLUSTER_CREATION_TIMEOUT);
 
         await createKindCluster(page, CLUSTER_NAME, CLUSTER_CREATION_TIMEOUT, {
-          providerType: providerTypeGHA,
+          providerType: 'docker',
           useIngressController: true,
         });
       });

@@ -42,6 +42,14 @@ prepare:
       sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 pduser
       sudo loginctl enable-linger pduser
       sudo chown -R pduser:pduser "$TMT_TREE"
+  
+  - name: install docker
+    how: shell
+    script: | 
+      sudo dnf -y install dnf-plugins-core
+      sudo dnf-3 config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+      sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+      sudo systemctl start docker
 
 /e2e-smoke:
   summary:  Execute smoke Playwright end-to-end tests.
