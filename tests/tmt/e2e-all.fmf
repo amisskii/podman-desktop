@@ -1,0 +1,11 @@
+summary: Execute all Playwright end-to-end test suites, excluding those related to Kubernetes.
+tag:
+  - all
+duration: 2h
+framework: shell
+test: |
+  sudo -u pduser bash -c "
+    cd $TMT_TREE
+    pnpm install
+    pnpm test:e2e:all
+  "

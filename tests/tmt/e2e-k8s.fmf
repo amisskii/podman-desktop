@@ -1,0 +1,12 @@
+summary: Execute all Playwright end-to-end test suites, excluding those related to Kubernetes.
+tag:
+  - k8s
+duration: 2h
+framework: shell
+test: |
+  sudo -u pduser bash -c "
+    cd $TMT_TREE
+    export KIND_PROVIDER_GHA=docker
+    pnpm install
+    pnpm test:e2e:k8s
+  "

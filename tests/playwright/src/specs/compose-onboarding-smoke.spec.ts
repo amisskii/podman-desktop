@@ -31,11 +31,13 @@ import { expect as playExpect, test } from '../utility/fixtures';
 import { isCI, isLinux } from '../utility/platform';
 
 const RESOURCE_NAME: string = 'Compose';
+const skipTest = process.env.SKIP_COMPOSE_ONBOARDING_TEST === 'true';
 
 let composeVersion: string;
 // property that will make sure that on linux we can run only partial tests, by default this is turned off
 const composePartialInstallation = process.env.COMPOSE_PARTIAL_INSTALL ?? false;
 
+test.skip(skipTest, 'Skip test on testing farm');
 test.skip(!!isCI && isLinux, 'Tests suite should not run on Linux platform');
 
 test.beforeAll(async ({ runner, welcomePage }) => {
