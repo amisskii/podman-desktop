@@ -5,6 +5,7 @@ duration: 2h
 framework: shell
 test: |
   sudo -u pduser bash -c "
+    which podman
     cd $TMT_TREE
     echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
     podman info | grep -i cgroup
