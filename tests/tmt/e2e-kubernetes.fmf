@@ -6,11 +6,15 @@ framework: shell
 test: |
   sudo -u pduser bash -c "
     which podman
-    ulimit -a
     cd $TMT_TREE
     echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
     podman info | grep -i cgroup
     echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
     pnpm install
+    echo "CI_DEBUG: HOME is $HOME"
+    echo "CI_DEBUG: XDG_RUNTIME_DIR is $XDG_RUNTIME_DIR"
+    echo "CI_DEBUG: DBUS_SESSION_BUS_ADDRESS is $DBUS_SESSION_BUS_ADDRESS"
+    systemctl --user status podman.socket
+    systemctl --user status podman.service
     pnpm test:e2e:k8s
   "
