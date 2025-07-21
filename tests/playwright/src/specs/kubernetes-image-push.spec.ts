@@ -52,7 +52,7 @@ const __dirname = path.dirname(__filename);
 const DEPLOYMENT_YAML_PATH = path.resolve(__dirname, '..', '..', 'resources', 'kubernetes', `${DEPLOYMENT_NAME}.yaml`);
 
 const skipKindInstallation = process.env.SKIP_KIND_INSTALL === 'true';
-const providerTypeGHA = process.env.KIND_PROVIDER_GHA ?? '';
+const providerTypeCI = process.env.KIND_PROVIDER ?? '';
 
 test.skip(!canRunKindTests(), `This test can't run on a windows rootless machine`);
 
@@ -70,7 +70,7 @@ test.beforeAll(async ({ runner, welcomePage, page, navigationBar }) => {
   }
 
   await createKindCluster(page, CLUSTER_NAME, CLUSTER_CREATION_TIMEOUT, {
-    providerType: providerTypeGHA,
+    providerType: providerTypeCI,
     useIngressController: false,
   });
 });
