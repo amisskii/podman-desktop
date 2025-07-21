@@ -62,7 +62,19 @@ permissions:
   contents: read
 
 jobs:
-  e2e-tests:
+  e2e-tests-testing-farm:
+    name: Run All E2E tests on Testing Farm CI 
+    runs-on: ubuntu-24.04
+    permissions:
+      checks: write # required for mikepenz/action-junit-report
+    steps: 
+      - name: PR check tests on Testing Farm 
+        uses: sclorg/testing-farm-as-github-action@v4
+        with:
+          api_key: ${{ secrets.TF_TOKEN }}
+          compose: Fedora-42
+          tmt_plan_filter: 'name:/plans/pd-e2e-plan/e2e'
+  e2e-tests-gha: 
     name: Run All E2E tests
     runs-on: ubuntu-24.04
     # disable on forks as secrets are not available
