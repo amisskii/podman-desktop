@@ -586,10 +586,10 @@ jobs:
   
   testing-farm-pr-check-smoke: 
     name: testing-farm-test-smoke
-    id: tf-e2e-smoke
     runs-on: ubuntu-latest
     steps: 
       - name: PR check tests on Testing Farm smoke
+        id: tf-e2e-smoke
         uses: sclorg/testing-farm-as-github-action@v4
         with:
           api_key: ${{ secrets.TF_TOKEN }}
