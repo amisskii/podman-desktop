@@ -70,7 +70,7 @@ let resourcesPage: ResourcesPage;
 let kindResourceCard: ResourceConnectionCardPage;
 
 const skipKindInstallation = process.env.SKIP_KIND_INSTALL === 'true';
-const providerTypeGHA = process.env.KIND_PROVIDER_GHA ?? '';
+const providerTypeCI = process.env.KIND_PROVIDER ?? '';
 
 test.skip(!canRunKindTests(), `This test can't run on a windows rootless machine`);
 
@@ -125,7 +125,7 @@ test.describe('Kind End-to-End Tests', { tag: '@k8s_e2e' }, () => {
         test.setTimeout(CLUSTER_CREATION_TIMEOUT);
 
         await createKindCluster(page, CLUSTER_NAME, CLUSTER_CREATION_TIMEOUT, {
-          providerType: providerTypeGHA,
+          providerType: providerTypeCI,
           useIngressController: true,
         });
       });
@@ -187,7 +187,7 @@ test.describe('Kind End-to-End Tests', { tag: '@k8s_e2e' }, () => {
         test.setTimeout(CLUSTER_CREATION_TIMEOUT);
 
         await createKindCluster(page, CLUSTER_NAME, CLUSTER_CREATION_TIMEOUT, {
-          providerType: providerTypeGHA,
+          providerType: providerTypeCI,
           useIngressController: false,
         });
       });
@@ -233,7 +233,7 @@ test.describe('Kind End-to-End Tests', { tag: '@k8s_e2e' }, () => {
 
         await createKindCluster(page, CUSTOM_CONFIG_CLUSTER_NAME, CLUSTER_CREATION_TIMEOUT, {
           configFilePath: CUSTOM_CONFIG_FILE_PATH,
-          providerType: providerTypeGHA,
+          providerType: providerTypeCI,
           useIngressController: false,
         });
         await checkClusterResources(page, CUSTOM_CONFIG_KIND_CONTAINER);
