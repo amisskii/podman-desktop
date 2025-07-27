@@ -37,10 +37,7 @@ prepare:
   - name: Configure user to run Podman in rootless mode.
     how: shell
     script: |
-      sudo useradd -m -s /bin/bash pduser
-      sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 pduser
-      sudo loginctl enable-linger pduser
-      sudo chown -R pduser:pduser "$TMT_TREE"
+      systemctl –user start podman.socket
 
 /e2e-smoke:
   summary:  Execute smoke Playwright end-to-end tests.
