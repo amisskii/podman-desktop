@@ -38,7 +38,7 @@ prepare:
     how: shell
     script: |
       systemctl --user enable podman.socket
-      systemctl –-user start podman.socket
+      systemctl --user start podman.socket
 
 
 /e2e-smoke:
