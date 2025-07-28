@@ -37,7 +37,9 @@ prepare:
   - name: Configure user to run Podman in rootless mode.
     how: shell
     script: |
-      systemctl –user start podman.socket
+      systemctl --user enable podman.socket
+      systemctl –-user start podman.socket
+
 
 /e2e-smoke:
   summary:  Execute smoke Playwright end-to-end tests.
