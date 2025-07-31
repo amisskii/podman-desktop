@@ -5,6 +5,9 @@ duration: 2h
 framework: shell
 test: |
   export SKIP_COMPOSE_ONBOARDING_TEST=true
+  echo '!!!!!!!!!!!!!!!'
   cd $TMT_TREE
+  pwd
+  echo '!!!!!!!!!!!!!!!'
   pnpm install
   pnpm test:e2e:smoke
