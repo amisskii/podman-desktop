@@ -11,4 +11,5 @@ test: |
   echo '!!!!!!!!!!!!!!!'
   pnpm install
   pnpm test:e2e:smoke
-  mv /var/ARTIFACTS/work-e2e-smokez65gv8vq/plans/pd-e2e-plan/e2e-smoke/tree/tests/playwright/output/junit-results.xml /var/ARTIFACTS/work-e2e-smokez65gv8vq/plans/pd-e2e-plan/e2e-smoke/
+  cd ..
+  mv $TMT_TREE/tests/playwright/output/junit-results.xml ./
