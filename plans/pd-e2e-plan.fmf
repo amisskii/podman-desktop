@@ -19,6 +19,11 @@ provision:
 environment: 
    TEST_PODMAN_MACHINE: true
 
+artifacts:
+    - path: '$TMT_TREE/tests/playwright/output/junit-results.xml'
+      name: 'junit-results'
+      type: 'xunit'
+
 prepare:
   - name: Install system dependencies
     how: shell
@@ -41,6 +46,7 @@ prepare:
       systemctl --user start podman.socket
 
 
+
 /e2e-smoke:
   summary:  Execute smoke Playwright end-to-end tests.
   prepare+:
@@ -49,34 +55,3 @@ prepare:
       script: bash $TMT_TREE/plans/scripts/install-docker-compose.sh
   discover+: 
     filter: 'tag:smoke'
-
-/e2e: 
-  summary: Execute all Playwright end-to-end test, excluding those related to Kubernetes.
-  prepare+:
-    - name: Install docker compose CLI
-      how: shell
-      script: bash $TMT_TREE/plans/scripts/install-docker-compose.sh
-  discover+: 
-    filter: 'tag:e2e'
-
-/e2e-k8s:
-  summary: Execute Kubernetes end-to-end tests using Docker as the provider for Kind cluster creation.
-  prepare+:
-    - name: Install and configure docker 
-      how: shell
-      script: |
-        sudo dnf -y install dnf-plugins-core
-        sudo dnf-3 config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
-        sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-        sudo systemctl start docker
-        sudo systemctl enable docker
-        sudo usermod -aG docker pduser
-    - name: Install Kind CLI 
-      how: shell
-      script: bash $TMT_TREE/plans/scripts/install-kind.sh
-    - name: Install kubectl CLI 
-      how: shell
-      script: bash $TMT_TREE/plans/scripts/install-kubectl.sh
-  discover+:
-    filter: 'tag:k8s'
- 
