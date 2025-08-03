@@ -19,11 +19,6 @@ provision:
 environment: 
    TEST_PODMAN_MACHINE: true
 
-artifacts:
-    - path: '$TMT_TREE/tests/playwright/output/junit-results.xml'
-      name: 'junit-results'
-      type: 'xunit'
-
 prepare:
   - name: Install system dependencies
     how: shell
@@ -44,8 +39,6 @@ prepare:
     script: |
       systemctl --user enable podman.socket
       systemctl --user start podman.socket
-
-
 
 /e2e-smoke:
   summary:  Execute smoke Playwright end-to-end tests.

@@ -11,3 +11,6 @@ test: |
   echo '!!!!!!!!!!!!!!!'
   pnpm install
   pnpm test:e2e:smoke
+  cd ..
+  pwd 
+  mv $TMT_TREE/tests/playwright/output/junit-results.xml ./finish/
