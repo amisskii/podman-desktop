@@ -13,4 +13,5 @@ test: |
   pnpm test:e2e:smoke
   cd ..
   pwd 
+  ls $TMT_TREE/tests/playwright/output/
   mv $TMT_TREE/tests/playwright/output/junit-results.xml ./finish/
