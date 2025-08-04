@@ -602,7 +602,7 @@ jobs:
           echo "Downloading from: $url"
           curl -o results-junit.xml "$url"
 
-          work_id=$(grep -o 'work-plan-smoke[^/"]*' results-junit.xml | head -1)
+          work_id=$(grep -o 'work-e2e-smoke[^/"]*' results-junit.xml | head -1)
           echo "Extracted work ID: $work_id"
 
           base_url="${{ steps.tf-e2e-smoke.outputs.test_log_url }}"
