@@ -7,5 +7,5 @@ test: |
   cd $TMT_TREE
   pnpm install
   pnpm test:e2e:smoke
-  bash $TMT_TREE/tests/tmt/scripts/create-resutls.sh
+  
 result: custom
