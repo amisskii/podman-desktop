@@ -48,5 +48,3 @@ prepare:
       script: bash $TMT_TREE/plans/scripts/install-docker-compose.sh
   discover+: 
     filter: 'tag:smoke'
-
-    $TMT_TREE/tests/playwright/output/junit-results.xml
