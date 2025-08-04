@@ -11,9 +11,10 @@ test: |
   cp $TMT_TREE/tests/playwright/output/junit-results.xml $TMT_TEST_DATA
   ls $TMT_TEST_DATA
   cat <<EOF > $TMT_TEST_DATA/results.yaml
-  - name: smoke-test
+  - name: /tests/tmt/e2e-smoke
     result: pass
-    note: "Playwright test executed and results referenced directly from original location."
+    note: 
+      - "Playwright test executed and results referenced directly from original location."
     log:
       - junit-results.xml
   EOF
