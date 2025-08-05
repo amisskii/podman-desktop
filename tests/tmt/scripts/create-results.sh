@@ -12,6 +12,7 @@ cat <<EOF > ./results.yaml
   note: 
     - "Playwright tests passed."
   log:
+    - ../output.txt
     - junit-results.xml
 EOF
 
@@ -22,6 +23,7 @@ cat <<EOF > ./results.yaml
   note: 
     - "Playwright tests failed."
   log:
+    - ../output.txt
     - junit-results.xml
 EOF
 fi
