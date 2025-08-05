@@ -8,6 +8,8 @@ test: |
   cd $TMT_TREE
   pnpm install
   pnpm test:e2e:smoke
+  echo $?
   EXIT_CODE=$?
-  bash "$TMT_TREE/tests/tmt/scripts/create-results.sh" "$EXIT_CODE" smoke
+
+  bash "$TMT_TREE/tests/tmt/scripts/create-results.sh"
 result: custom
