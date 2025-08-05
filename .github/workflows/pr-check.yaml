@@ -605,11 +605,12 @@ jobs:
 
           BASE_URL="${{ steps.tf-e2e-smoke.outputs.test_log_url }}"
           WORK_ID=$(grep -o 'work-e2e-smoke[^/"]*' results-junit.xml | head -1)
-          echo "$WORK_ID=$WORK_ID" >> $GITHUB_ENV
-          echo "$BASE_URL=$BASE_URL" >> $GITHUB_ENV
+          echo "WORK_ID=$WORK_ID" >> $GITHUB_ENV
+          echo "BASE_URL=$BASE_URL" >> $GITHUB_ENV
 
           
       - name: Download the junit report file from TF 
+        if: always()
         run: | 
           FULL_REPORT_URL="${{  env.BASE_URL  }}/${{ env.WORK_ID }}/plans/pd-e2e-plan/e2e-smoke/execute/data/guest/default-0/tests/tmt/e2e-smoke-1/data/junit-results.xml"
 
@@ -638,6 +639,7 @@ jobs:
           wget -r -np -nH --cut-dirs=10 -R "index.html*" $VIDEOS_URL
 
       - name: Upload test artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with: 
           name: tf-e2e-results
