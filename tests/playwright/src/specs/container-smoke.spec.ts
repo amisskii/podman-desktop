@@ -227,7 +227,7 @@ test.describe.serial('Verification of container creation workflow', { tag: '@smo
       .toContain(ContainerState.Running);
 
     images = await navigationBar.openImages();
-    playExpect(await images.getCurrentStatusOfImage(imageToPull)).toBe('USED');
+    playExpect(await images.getCurrentStatusOfImage(imageToPull)).toBe('dd');
 
     //delete it from containers page
     await navigationBar.openContainers();
