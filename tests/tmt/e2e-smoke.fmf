@@ -8,15 +8,5 @@ test: |
   cd $TMT_TREE
   pnpm install
   pnpm test:e2e:smoke
-  cp $TMT_TREE/tests/playwright/output/junit-results.xml $TMT_TEST_DATA
-  ls $TMT_TEST_DATA
-  cat <<EOF > $TMT_TEST_DATA/results.yaml
-  - name: /tests/tmt/e2e-smoke
-    result: pass
-    note: 
-      - "Playwright test executed and results referenced directly from original location."
-    log:
-      - output.txt
-      - junit-results.xml
-  EOF
+  bash $TMT_TREE/tests/tmt/scripts/create-results.sh
 result: custom

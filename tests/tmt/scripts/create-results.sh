@@ -1,14 +1,17 @@
 #!/bin/bash
+set -euo pipefail
 
-TMT_RESULTS_YAML="$TMT_TEST_DATA/results.yaml"
-TEST_FMF_ID="$(tmt test id)" # Get the unique FMF ID of the current test
+cd "$TMT_TEST_DATA"
 
-# Generate the results.yaml file, directly referencing the full paths
-cat <<EOF > $TMT_TEST_DATA/results.yaml
-- name: "$TEST_FMF_ID"
+cp ../output.txt .
+cp "$TMT_TREE/tests/playwright/output/junit-results.xml" .
+
+cat <<EOF > ./results.yaml
+- name: /tests/tmt/e2e-smoke
   result: pass
-  note: "Playwright test executed and results referenced directly from original location."
+  note: 
+    - "Playwright test executed and results referenced directly from original location."
   log:
-    - /tests/playwright/output/junit-results.xml
+    - output.txt
+    - junit-results.xml
 EOF
-exit 0
