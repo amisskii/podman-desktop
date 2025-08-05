@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd "$TMT_TEST_DATA"
 
-cp "$TMT_TREE/tests/playwright/output/junit-results.xml" .
+cp  -r "$TMT_TREE/tests/playwright/output" .
 
 if [ "$1" -eq 0 ]; then 
 cat <<EOF > ./results.yaml
@@ -13,10 +13,11 @@ cat <<EOF > ./results.yaml
     - "Playwright tests passed."
   log:
     - ../output.txt
-    - junit-results.xml
+    - output
 EOF
 
 elif [ "$1" -eq 255 ]; then 
+
 cat <<EOF > ./results.yaml
 - name: /tests/$2
   result: fail
@@ -24,6 +25,6 @@ cat <<EOF > ./results.yaml
     - "Playwright tests failed."
   log:
     - ../output.txt
-    - junit-results.xml
+    - output
 EOF
 fi
