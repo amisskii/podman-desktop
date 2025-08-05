@@ -4,6 +4,7 @@ tag:
 duration: 2h
 framework: shell
 test: |
+  set +e
   echo $TMT_TEST_DATA
   cd $TMT_TREE
   pnpm install

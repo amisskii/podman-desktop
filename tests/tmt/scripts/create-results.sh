@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 cd "$TMT_TEST_DATA"
 
