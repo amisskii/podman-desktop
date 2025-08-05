@@ -1,18 +1,46 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 cd "$TMT_TEST_DATA"
 
-cp -r "$TMT_TREE/tests/playwright/output" .
+cp "$TMT_TREE/tests/playwright/output/junit-results.xml" .
 
-cat <<EOF > ./results.yaml
-- name: /tests/smoke
+# Check exit code ($1)
+if [ "$1" -eq 0 ]; then 
+  cat <<EOF > ./results.yaml
+- name: /tests/$2
   result: pass
   note: 
-    - "test"
+    - "Playwright tests passed."
   log:
     - ../output.txt
-    - output
+    - junit-results.xml
 EOF
 
-ls $TMT_TEST_DATA
+elif [ "$1" -eq 255 ]; then
+
+  # Check if directories exist (correcting syntax)
+  if [ -d "$TMT_TREE/tests/playwright/output/traces" ]; then
+    cp -r "$TMT_TREE/tests/playwright/output/traces" .
+  fi
+
+  if [ -d "$TMT_TREE/tests/playwright/output/videos" ]; then 
+    cp -r "$TMT_TREE/tests/playwright/output/videos" .
+  fi
+
+  cat <<EOF > ./results.yaml
+- name: /tests/$2
+  result: fail
+  note: 
+    - "Playwright tests failed."
+  log:
+    - ../output.txt
+    - junit-results.xml
+    - videos
+    - traces
+EOF
+
+else
+  echo "Unexpected exit code: $1"
+  exit 1
+fi
