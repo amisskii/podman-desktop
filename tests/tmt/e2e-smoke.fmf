@@ -16,6 +16,7 @@ test: |
     note: 
       - "Playwright test executed and results referenced directly from original location."
     log:
+      - output.txt
       - junit-results.xml
   EOF
 result: custom
