@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euo pipefail
 
 cd "$TMT_TEST_DATA"
 
