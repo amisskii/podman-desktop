@@ -11,6 +11,5 @@ test: |
   pnpm test:e2e:smoke
   echo $?
   EXIT_CODE=$?
-
-  bash "$TMT_TREE/tests/tmt/scripts/create-results.sh"
+  bash "$TMT_TREE/tests/tmt/scripts/create-results.sh" "$EXIT_CODE" smoke
 result: custom
