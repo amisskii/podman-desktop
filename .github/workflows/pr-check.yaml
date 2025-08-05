@@ -586,7 +586,6 @@ jobs:
   testing-farm-pr-check-smoke:
     name: Run smoke tests on Testing Farm
     runs-on: ubuntu-latest
-
     steps:
       - name: Run smoke tests via Testing Farm
         id: tf-e2e-smoke
