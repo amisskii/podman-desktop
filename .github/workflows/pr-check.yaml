@@ -605,8 +605,8 @@ jobs:
 
           BASE_URL="${{ steps.tf-e2e-smoke.outputs.test_log_url }}"
           WORK_ID=$(grep -o 'work-e2e-smoke[^/"]*' results-junit.xml | head -1)
-          echo "$WORK_ID" >> $GITHUB_ENV
-          echo "$BASE_URL" >> $GITHUB_ENV
+          echo "$WORK_ID=$WORK_ID" >> $GITHUB_ENV
+          echo "$BASE_URL=$BASE_URL" >> $GITHUB_ENV
 
           
       - name: Download the junit report file from TF 
