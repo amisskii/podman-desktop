@@ -92,7 +92,7 @@ const INGRESS_YAML_PATH: string = path.resolve(
 );
 
 const skipKindInstallation = process.env.SKIP_KIND_INSTALL === 'true';
-const providerTypeGHA = process.env.KIND_PROVIDER_GHA ?? '';
+const providerTypeCI = process.env.KIND_PROVIDER ?? '';
 
 test.beforeAll(async ({ runner, welcomePage, page, navigationBar }) => {
   test.setTimeout(350_000);
@@ -108,7 +108,7 @@ test.beforeAll(async ({ runner, welcomePage, page, navigationBar }) => {
   }
 
   await createKindCluster(page, CLUSTER_NAME, CLUSTER_CREATION_TIMEOUT, {
-    providerType: providerTypeGHA,
+    providerType: providerTypeCI,
     useIngressController: true,
   });
 });
