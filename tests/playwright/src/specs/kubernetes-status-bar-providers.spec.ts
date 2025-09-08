@@ -40,7 +40,7 @@ const kindProviderName = 'Kind';
 const kindClusterName: string = 'kind-cluster';
 const kindNode: string = `${kindClusterName}-control-plane`;
 const skipKindInstall = process.env.SKIP_KIND_INSTALL === 'true';
-const providerTypeGHA = process.env.KIND_PROVIDER_GHA ?? '';
+const providerTypeCI = process.env.KIND_PROVIDER ?? '';
 
 test.beforeAll(async ({ runner, welcomePage, page, navigationBar }) => {
   runner.setVideoAndTraceName('status-bar-providers-e2e');
@@ -129,7 +129,7 @@ test.describe.serial('Status bar providers feature verification', { tag: '@k8s_e
     test.skip(!canRunKindTests(), `This test can't run on a windows rootless machine`);
     test.setTimeout(600_000);
     await createKindCluster(page, kindClusterName, 550_000, {
-      providerType: providerTypeGHA,
+      providerType: providerTypeCI,
       useIngressController: false,
     });
 

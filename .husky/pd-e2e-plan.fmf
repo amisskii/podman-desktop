@@ -1,0 +1,52 @@
+summary: | 
+   This plan prepares an environment for running Playwright end-to-end tests against the Podman Desktop application. 
+   It includes steps to install all required system dependencies and configure a dedicated local user for running Podman in rootless mode. 
+
+discover:
+    how: fmf
+
+execute:
+    how: tmt 
+
+provision: 
+  hardware: 
+    memory: ">= 16 GB"
+    cpu: 
+      cores: ">= 4"
+    disk:
+      - size: ">= 20 GB"
+
+environment: 
+   TEST_PODMAN_MACHINE: true
+
+prepare:
+  - name: Install system dependencies
+    how: shell
+    script: |
+      sudo dnf update -y
+      sudo dnf install -y \
+        nodejs npm podman xorg-x11-server-Xvfb \
+        nss nspr atk at-spi2-atk cups libXcomposite libXdamage libXfixes libXrandr cairo pango alsa-lib \
+        gcc-c++ gtk3 passt jq
+      sudo npm install -g pnpm
+      echo "NodeJS version: $(node -v)"
+      echo "npm version: $(npm -v)"
+      echo "pnpm Version: $(pnpm --version)"
+      echo "podman version: $(podman -v)"
+
+  - name: Configure user to run Podman in rootless mode.
+    how: shell
+    script: |
+      systemctl --user enable podman.socket
+      systemctl --user start podman.socket
+
+/e2e-smoke:
+  summary:  Execute smoke Playwright end-to-end tests.
+  prepare+:
+    - name: Install docker compose CLI
+      how: shell
+      script: bash $TMT_TREE/plans/scripts/install-docker-compose.sh
+  discover+: 
+    filter: 'tag:smoke'
+
+    $TMT_TREE/tests/playwright/output/junit-results.xml

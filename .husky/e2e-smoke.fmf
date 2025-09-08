@@ -1,0 +1,11 @@
+summary: Execute smoke Playwright end-to-end tests. 
+tag:
+  - smoke
+duration: 2h
+framework: shell
+test: |
+  cd $TMT_TREE
+  pnpm install
+  pnpm test:e2e:smoke
+  
+result: custom
