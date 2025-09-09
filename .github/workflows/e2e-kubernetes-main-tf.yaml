@@ -14,11 +14,12 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-name: PD E2E Testing Farm
+name: PD Kubernetes E2E Testing Farm
 
 on:
-  schedule:
-    - cron: '0 1 * * *'
+  push:
+    branches: [main]
+    
   workflow_dispatch:
     inputs:
       fork:
