@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-OUTPUT_DIR="$TMT_TREE/podman-desktop/tests/playwright/output/"
+OUTPUT_DIR="$TMT_TREE/tests/playwright/output/"
 
 cd "$TMT_TEST_DATA"
 

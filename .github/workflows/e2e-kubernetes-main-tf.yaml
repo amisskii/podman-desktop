@@ -71,7 +71,7 @@ jobs:
           api_key: ${{ secrets.TF_TOKEN }}
           create_github_summary: "false"
           compose: ${{ matrix.fedora-version }}
-          tmt_plan_filter: 'name:/plans/pd-e2e-plan/${{ env.NPM_TARGET }}'
+          tmt_plan_filter: 'name:/tmt/plans/pd-e2e-plan/${{ env.NPM_TARGET }}'
           variables: FORK=${{ env.FORK }};BRANCH=${{ env.BRANCH }};COMPOSE=${{ matrix.fedora-version }};ARCH=x86_64;PODMAN_VERSION=${{ env.PODMAN_VERSION }}
 
       - name: Extract Testing Farm work ID and base URL
@@ -89,7 +89,7 @@ jobs:
       - name: Download Playwright JUnit report from Testing Farm
         if: always()
         run: |
-          TF_PLAYWRIGHT_JUNIT_URL="${{ env.TF_ARTIFACTS_URL }}/${{ env.TF_WORK_ID }}/plans/pd-e2e-plan/${{ env.NPM_TARGET }}/execute/data/guest/default-0/tmt/${{ env.NPM_TARGET }}-test-1/data/junit-results.xml"
+          TF_PLAYWRIGHT_JUNIT_URL="${{ env.TF_ARTIFACTS_URL }}/${{ env.TF_WORK_ID }}/tmt/plans/pd-e2e-plan/${{ env.NPM_TARGET }}/execute/data/guest/default-0/tmt/${{ env.NPM_TARGET }}-test-1/data/junit-results.xml"
           curl -o playwright-junit-results.xml "$TF_PLAYWRIGHT_JUNIT_URL"
 
       - name: Publish test report to PR
@@ -108,7 +108,7 @@ jobs:
         run: |
           mkdir -p results
 
-          TF_TEST_DATA_URL="${{ env.TF_ARTIFACTS_URL }}/${{ env.TF_WORK_ID }}/plans/pd-e2e-plan/${{ env.NPM_TARGET }}/execute/data/guest/default-0/tmt/${{ env.NPM_TARGET }}-test-1/data"
+          TF_TEST_DATA_URL="${{ env.TF_ARTIFACTS_URL }}/${{ env.TF_WORK_ID }}/tmt/plans/pd-e2e-plan/${{ env.NPM_TARGET }}/execute/data/guest/default-0/tmt/${{ env.NPM_TARGET }}-test-1/data"
           TF_TRACES_URL="${TF_TEST_DATA_URL}/traces/"
           TF_VIDEOS_URL="${TF_TEST_DATA_URL}/videos/"
 
