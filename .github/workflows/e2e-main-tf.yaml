@@ -40,9 +40,10 @@ on:
       npm_target:
         description: npm tests target
         type: choice
-        default: 'e2e'
+        default: 'all'
         options:
           - e2e
+          - kubernetes
           - smoke
           - all
 
@@ -58,7 +59,7 @@ jobs:
     steps:
       - name: Set the default env. variables
         env:
-          DEFAULT_NPM_TARGET: 'e2e'
+          DEFAULT_NPM_TARGET: 'all'
           DEFAULT_FORK: 'podman-desktop'
           DEFAULT_BRANCH: 'main'
           DEFAULT_PODMAN_VERSION: 'nightly'
