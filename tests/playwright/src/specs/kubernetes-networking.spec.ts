@@ -19,9 +19,8 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { PlayYamlOption } from '../model/core/operations';
 import { KubernetesResourceState } from '../model/core/states';
-import { KubernetesResources } from '../model/core/types';
+import { KubernetesResources, PodmanKubePlayYamlOption } from '../model/core/types';
 import { createKindCluster, deleteCluster } from '../utility/cluster-operations';
 import { expect as playExpect, test } from '../utility/fixtures';
 import {
@@ -42,16 +41,12 @@ const CLUSTER_CREATION_TIMEOUT: number = 300_000;
 const KIND_NODE: string = `${CLUSTER_NAME}-control-plane`;
 const RESOURCE_NAME: string = 'kind';
 const KUBERNETES_CONTEXT: string = `kind-${CLUSTER_NAME}`;
-const KUBERNETES_NAMESPACE: string = 'default';
+const PLAY_OPTION: PodmanKubePlayYamlOption = PodmanKubePlayYamlOption.Podman;
 
 const DEPLOYMENT_NAME: string = 'test-deployment-resource';
 const SERVICE_NAME: string = 'test-service-resource';
 const INGRESS_NAME: string = 'test-ingress-resource';
-const KUBERNETES_RUNTIME = {
-  runtime: PlayYamlOption.Kubernetes,
-  kubernetesContext: KUBERNETES_CONTEXT,
-  kubernetesNamespace: KUBERNETES_NAMESPACE,
-};
+
 const IMAGE_NAME: string = 'ghcr.io/podmandesktop-ci/nginx';
 const PULL_IMAGE_NAME: string = `${IMAGE_NAME}:latest`;
 const CONTAINER_NAME: string = 'nginx-container';
@@ -139,7 +134,7 @@ test.describe('Kubernetes networking E2E test', { tag: '@k8s_e2e' }, () => {
           KubernetesResources.Deployments,
           DEPLOYMENT_NAME,
           DEPLOYMENT_YAML_PATH,
-          KUBERNETES_RUNTIME,
+          PLAY_OPTION,
         );
         await checkKubernetesResourceState(
           page,
@@ -155,7 +150,7 @@ test.describe('Kubernetes networking E2E test', { tag: '@k8s_e2e' }, () => {
           KubernetesResources.Services,
           SERVICE_NAME,
           SERVICE_YAML_PATH,
-          KUBERNETES_RUNTIME,
+          PLAY_OPTION,
         );
         await checkKubernetesResourceState(
           page,
@@ -171,7 +166,7 @@ test.describe('Kubernetes networking E2E test', { tag: '@k8s_e2e' }, () => {
           KubernetesResources.IngeressesRoutes,
           INGRESS_NAME,
           INGRESS_YAML_PATH,
-          KUBERNETES_RUNTIME,
+          PLAY_OPTION,
         );
         await checkKubernetesResourceState(
           page,

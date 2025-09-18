@@ -19,9 +19,8 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { PlayYamlOption } from '../model/core/operations';
 import { KubernetesResourceState } from '../model/core/states';
-import { KubernetesResources } from '../model/core/types';
+import { KubernetesResources, PodmanKubePlayYamlOption } from '../model/core/types';
 import { canRunKindTests } from '../setupFiles/setup-kind';
 import { createKindCluster, deleteCluster } from '../utility/cluster-operations';
 import { expect as playExpect, test } from '../utility/fixtures';
@@ -37,14 +36,8 @@ const CLUSTER_NAME: string = 'kind-cluster';
 const CLUSTER_CREATION_TIMEOUT: number = 300_000;
 const KIND_NODE: string = `${CLUSTER_NAME}-control-plane`;
 const RESOURCE_NAME: string = 'kind';
-const KUBERNETES_CONTEXT = `kind-${CLUSTER_NAME}`;
-const KUBERNETES_NAMESPACE = 'default';
 const DEPLOYMENT_NAME = 'test-image-push';
-const KUBERNETES_RUNTIME = {
-  runtime: PlayYamlOption.Kubernetes,
-  kubernetesContext: KUBERNETES_CONTEXT,
-  kubernetesNamespace: KUBERNETES_NAMESPACE,
-};
+const PLAY_OPTION: PodmanKubePlayYamlOption = PodmanKubePlayYamlOption.Podman;
 const IMAGE_NAME = 'ghcr.io/linuxcontainers/alpine';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -115,7 +108,7 @@ test.describe.serial(
         KubernetesResources.Pods,
         DEPLOYMENT_NAME + '-pod',
         DEPLOYMENT_YAML_PATH,
-        KUBERNETES_RUNTIME,
+        PLAY_OPTION,
       );
 
       await checkKubernetesResourceState(
