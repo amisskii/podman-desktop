@@ -16,8 +16,6 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
-import type { PlayYamlRuntime } from './operations';
-
 export interface ContainerInteractiveParams {
   interactive?: boolean;
   attachTerminal?: boolean;
@@ -43,10 +41,9 @@ export interface DeployPodOptions {
   useOpenShiftRoutes?: boolean;
 }
 
-export interface PlayKubernetesOptions {
-  runtime?: PlayYamlRuntime;
-  kubernetesNamespace?: string;
-  kubernetesContext: string;
+export enum PodmanKubePlayYamlOption {
+  CreateFromScratch,
+  Podman,
 }
 
 export enum KubernetesResources {

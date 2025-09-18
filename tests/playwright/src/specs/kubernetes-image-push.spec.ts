@@ -19,7 +19,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { PlayYamlRuntime } from '../model/core/operations';
+import { PlayYamlOption } from '../model/core/operations';
 import { KubernetesResourceState } from '../model/core/states';
 import { KubernetesResources } from '../model/core/types';
 import { canRunKindTests } from '../setupFiles/setup-kind';
@@ -41,7 +41,7 @@ const KUBERNETES_CONTEXT = `kind-${CLUSTER_NAME}`;
 const KUBERNETES_NAMESPACE = 'default';
 const DEPLOYMENT_NAME = 'test-image-push';
 const KUBERNETES_RUNTIME = {
-  runtime: PlayYamlRuntime.Kubernetes,
+  runtime: PlayYamlOption.Kubernetes,
   kubernetesContext: KUBERNETES_CONTEXT,
   kubernetesNamespace: KUBERNETES_NAMESPACE,
 };

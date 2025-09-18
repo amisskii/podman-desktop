@@ -20,6 +20,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { ImageState, PodState } from '../model/core/states';
+import { PodmanKubePlayYamlOption } from '../model/core/types';
 import { expect as playExpect, test } from '../utility/fixtures';
 import { deleteImage, deletePod } from '../utility/operations';
 import { isCI, isLinux } from '../utility/platform';
@@ -60,7 +61,7 @@ test.describe.serial('Deploy pod via Play YAML using locally built image', { tag
     const playYamlPage = await podsPage.openPlayKubeYaml();
     await playExpect(playYamlPage.heading).toBeVisible();
 
-    await playYamlPage.playYaml(POD_YAML_PATH, true);
+    await playYamlPage.playYaml(POD_YAML_PATH, PodmanKubePlayYamlOption.Podman, true);
     await playExpect(podsPage.heading).toBeVisible();
     await playExpect.poll(async () => await podsPage.podExists(POD_NAME), { timeout: 40_000 }).toBeTruthy();
     const podDetails = await podsPage.openPodDetails(POD_NAME);

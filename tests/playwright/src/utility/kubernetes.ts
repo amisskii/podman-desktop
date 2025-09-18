@@ -20,7 +20,7 @@ import type { Page } from '@playwright/test';
 import test, { expect as playExpect } from '@playwright/test';
 
 import type { KubernetesResourceState } from '../model/core/states';
-import type { PlayKubernetesOptions } from '../model/core/types';
+import type { PodmanKubePlayYamlOption } from '../model/core/types';
 import { KubernetesResources } from '../model/core/types';
 import { ContainerDetailsPage } from '../model/pages/container-details-page';
 import type { PodsPage } from '../model/pages/pods-page';
@@ -54,12 +54,12 @@ export async function createKubernetesResource(
   resourceType: KubernetesResources,
   resourceName: string,
   resourceYamlPath: string,
-  kubernetesRuntime: PlayKubernetesOptions,
+  kubePlayYamlOption: PodmanKubePlayYamlOption,
 ): Promise<void> {
   return test.step(`Create ${resourceType} kubernetes resource: ${resourceName}`, async () => {
     const navigationBar = new NavigationBar(page);
 
-    await applyYamlFileToCluster(page, resourceYamlPath, kubernetesRuntime);
+    await applyYamlFileToCluster(page, resourceYamlPath, kubePlayYamlOption);
     const kubernetesBar = await navigationBar.openKubernetes();
     const kubernetesResourcePage = await kubernetesBar.openTabPage(resourceType);
     await playExpect(kubernetesResourcePage.heading).toBeVisible();
@@ -131,7 +131,7 @@ export async function checkKubernetesResourceState(
 export async function applyYamlFileToCluster(
   page: Page,
   resourceYamlPath: string,
-  kubernetesRuntime: PlayKubernetesOptions,
+  kubePlayYamlOption: PodmanKubePlayYamlOption,
 ): Promise<PodsPage> {
   return test.step(`Apply YAML file to Kubernetes cluster`, async () => {
     const navigationBar = new NavigationBar(page);
@@ -140,7 +140,7 @@ export async function applyYamlFileToCluster(
     await playExpect(podsPage.heading).toBeVisible();
     const playYamlPage = await podsPage.openPlayKubeYaml();
     await playExpect(playYamlPage.heading).toBeVisible();
-    return await playYamlPage.playYaml(resourceYamlPath, false, 180_000, kubernetesRuntime);
+    return await playYamlPage.playYaml(resourceYamlPath, kubePlayYamlOption);
   });
 }
 

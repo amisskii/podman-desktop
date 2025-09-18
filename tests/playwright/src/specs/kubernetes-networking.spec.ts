@@ -19,7 +19,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { PlayYamlRuntime } from '../model/core/operations';
+import { PlayYamlOption } from '../model/core/operations';
 import { KubernetesResourceState } from '../model/core/states';
 import { KubernetesResources } from '../model/core/types';
 import { createKindCluster, deleteCluster } from '../utility/cluster-operations';
@@ -48,7 +48,7 @@ const DEPLOYMENT_NAME: string = 'test-deployment-resource';
 const SERVICE_NAME: string = 'test-service-resource';
 const INGRESS_NAME: string = 'test-ingress-resource';
 const KUBERNETES_RUNTIME = {
-  runtime: PlayYamlRuntime.Kubernetes,
+  runtime: PlayYamlOption.Kubernetes,
   kubernetesContext: KUBERNETES_CONTEXT,
   kubernetesNamespace: KUBERNETES_NAMESPACE,
 };

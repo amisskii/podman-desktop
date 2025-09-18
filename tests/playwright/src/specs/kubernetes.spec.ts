@@ -21,7 +21,7 @@ import { fileURLToPath } from 'node:url';
 
 import { expect as playExpect } from '@playwright/test';
 
-import { PlayYamlRuntime } from '../model/core/operations';
+import { PlayYamlOption } from '../model/core/operations';
 import { KubernetesResourceState } from '../model/core/states';
 import { KubernetesResources } from '../model/core/types';
 import { canRunKindTests } from '../setupFiles/setup-kind';
@@ -53,7 +53,7 @@ const DEPLOYMENT_NAME: string = 'test-deployment-resource';
 const CRON_JOB_NAME: string = 'test-cronjob-resource';
 
 const KUBERNETES_RUNTIME = {
-  runtime: PlayYamlRuntime.Kubernetes,
+  runtime: PlayYamlOption.Kubernetes,
   kubernetesContext: KUBERNETES_CONTEXT,
   kubernetesNamespace: KUBERNETES_NAMESPACE,
 };

@@ -18,8 +18,7 @@
 import type { Locator, Page } from '@playwright/test';
 import test, { expect as playExpect } from '@playwright/test';
 
-import { PlayYamlRuntime } from '../core/operations';
-import type { PlayKubernetesOptions } from '../core/types';
+import { PodmanKubePlayYamlOption } from '../core/types';
 import { BasePage } from './base-page';
 import { PodsPage } from './pods-page';
 
@@ -29,9 +28,7 @@ export class PlayKubeYamlPage extends BasePage {
   readonly playButton: Locator;
   readonly doneButton: Locator;
   readonly podmanRuntimeButton: Locator;
-  readonly kubernetesRuntimeButton: Locator;
-  readonly kubernetesContext: Locator;
-  readonly kubernetesNamespaces: Locator;
+  readonly createFromScratchButton: Locator;
   readonly alertMessage: Locator;
   readonly buildCheckbox: Locator;
 
@@ -44,12 +41,7 @@ export class PlayKubeYamlPage extends BasePage {
     this.podmanRuntimeButton = page.getByRole('button', {
       name: 'Podman Container Engine Runtime',
     });
-    this.kubernetesRuntimeButton = page.getByRole('button', {
-      name: 'Kubernetes Cluster Runtime',
-      exact: true,
-    });
-    this.kubernetesContext = this.kubernetesRuntimeButton.getByLabel('Default Kubernetes Context');
-    this.kubernetesNamespaces = this.kubernetesRuntimeButton.getByLabel('Kubernetes Namespace', { exact: true });
+    this.createFromScratchButton = page.getByRole('button', { name: 'Create file from scratch' });
     this.playButton = page.getByRole('button', { name: 'Play' });
     this.doneButton = page.getByRole('button', { name: 'Done' });
     this.alertMessage = this.page.getByLabel('Error Message Content');
@@ -58,11 +50,9 @@ export class PlayKubeYamlPage extends BasePage {
 
   async playYaml(
     pathToYaml: string,
+    playOption: PodmanKubePlayYamlOption = PodmanKubePlayYamlOption.Podman,
     buildImage: boolean = false,
     timeout: number = 120_000,
-    { runtime, kubernetesContext, kubernetesNamespace }: PlayKubernetesOptions = {
-      kubernetesContext: 'kind-kind-cluster',
-    },
   ): Promise<PodsPage> {
     return test.step('Play Kubernetes YAML', async () => {
       if (!pathToYaml) {
@@ -73,35 +63,19 @@ export class PlayKubeYamlPage extends BasePage {
       await this.yamlPathInput.evaluate(node => node.removeAttribute('readonly'));
       await this.playButton.evaluate(node => node.removeAttribute('disabled'));
 
-      switch (runtime) {
-        case PlayYamlRuntime.Kubernetes:
-          await playExpect(this.kubernetesRuntimeButton).toBeEnabled();
-          await this.kubernetesRuntimeButton.locator('..').click();
-          await playExpect(this.kubernetesRuntimeButton).toHaveAttribute('aria-pressed', 'true');
-
-          await playExpect(this.kubernetesContext).toBeVisible();
-          await playExpect(this.kubernetesContext).toHaveValue(kubernetesContext);
-
-          if (kubernetesNamespace) {
-            await playExpect(this.kubernetesNamespaces).toBeVisible({ timeout: 15_000 });
-            await this.kubernetesNamespaces.click();
-
-            const namespaceSelection = this.kubernetesNamespaces
-              .getByRole('button', { name: kubernetesNamespace })
-              .first();
-
-            await playExpect(namespaceSelection).toBeEnabled();
-            await namespaceSelection.click();
-            await playExpect(this.kubernetesNamespaces).toContainText(kubernetesNamespace);
-          }
-          break;
-        default:
-          await playExpect(this.podmanRuntimeButton).toBeVisible();
+      switch (playOption) {
+        case PodmanKubePlayYamlOption.Podman:
+          await playExpect(this.podmanRuntimeButton).toBeEnabled();
           await playExpect(this.podmanRuntimeButton).toHaveAttribute('aria-pressed', 'true');
+          await this.yamlPathInput.fill(pathToYaml);
+          break;
+        case PodmanKubePlayYamlOption.CreateFromScratch:
+          await playExpect(this.createFromScratchButton).toBeEnabled();
+          await this.createFromScratchButton.click();
+          await playExpect(this.createFromScratchButton).toHaveAttribute('aria-pressed', 'true');
           break;
       }
 
-      await this.yamlPathInput.fill(pathToYaml);
       await playExpect(this.buildCheckbox).not.toBeChecked();
       await playExpect(this.buildCheckbox).toBeEnabled();
       if (buildImage) {
