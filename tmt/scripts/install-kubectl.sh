@@ -17,8 +17,17 @@
 #  ***********************************************************************/
 
 #!/bin/bash
-set -e
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+set -euo pipefail
+
+KUBECTL_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)
+if [ -z "$KUBECTL_VERSION" ]; then
+  echo "Failed to fetch Kubectl version"
+  exit 1
+fi
+curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+curl -LO "https://dl.k8s.io/${KUBECTL_VERSION}/bin/linux/amd64/kubectl.sha256"
+# Verify checksum
+echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
 chmod +x ./kubectl
 sudo mv ./kubectl /usr/local/bin/kubectl
 kubectl version --client
