@@ -24,10 +24,10 @@ if [ -z "$KIND_VERSION" ]; then
   echo "Failed to fetch Kind version"
   exit 1
 fi
-curl -Lo ./kind "https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-amd64"
+curl -Lo ./kind-linux-amd64 "https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-amd64"
 curl -Lo ./kind.sha256 "https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-amd64.sha256"
 # Verify checksum
-echo "$(cat kind.sha256)  kind" | sha256sum --check
-chmod +x ./kind
-sudo mv ./kind /usr/local/bin/kind
+echo "$(cat kind.sha256)  kind-linux-amd64" | sha256sum --check
+chmod +x ./kind-linux-amd64
+sudo mv ./kind-linux-amd64 /usr/local/bin/kind
 kind version
