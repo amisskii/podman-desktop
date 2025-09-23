@@ -82,14 +82,16 @@ jobs:
       - name: Extract Testing Farm work ID and base URL
         if: always()
         run: |
+          set -euo pipefail
           TF_ARTIFACTS_URL="${{ steps.run-e2e-tf.outputs.test_log_url }}"
+          [[ -n "${TF_ARTIFACTS_URL:-}" ]] || { echo "Missing test_log_url output"; exit 1; }
           TF_DEFAULT_JUNIT_DEFAULT="${TF_ARTIFACTS_URL}/results-junit.xml"
-          curl -o results-junit.xml "$TF_DEFAULT_JUNIT_DEFAULT"
+          curl -fSLo results-junit.xml "$TF_DEFAULT_JUNIT_DEFAULT"
+          TF_WORK_ID="$(grep -oE 'work-${{ env.NPM_TARGET }}[^/"]*' results-junit.xml | head -1)"
+          [[ -n "${TF_WORK_ID:-}" ]] || { echo "Failed to extract TF_WORK_ID"; exit 1; }
 
-          TF_WORK_ID=$(grep -o 'work-${{ env.NPM_TARGET }}[^/"]*' results-junit.xml | head -1)
-
-          echo "TF_WORK_ID=$TF_WORK_ID" >> $GITHUB_ENV
-          echo "TF_ARTIFACTS_URL=$TF_ARTIFACTS_URL" >> $GITHUB_ENV
+          TF_PLAYWRIGHT_JUNIT_URL="${{ env.TF_ARTIFACTS_URL }}/${{ env.TF_WORK_ID }}/tmt/plans/pd-e2e-plan/${{ env.NPM_TARGET }}/execute/data/guest/default-0/tmt/tests/${{ env.NPM_TARGET }}-test-1/data/junit-results.xml"
+          curl -fSLo playwright-junit-results.xml "$TF_PLAYWRIGHT_JUNIT_URL"
 
       - name: Download Playwright JUnit report from Testing Farm
         if: always()
