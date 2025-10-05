@@ -21,7 +21,6 @@ import { fileURLToPath } from 'node:url';
 
 import { expect as playExpect } from '@playwright/test';
 
-import { PlayYamlRuntime } from '../model/core/operations';
 import { KubernetesResourceState } from '../model/core/states';
 import { KubernetesResources } from '../model/core/types';
 import { canRunKindTests } from '../setupFiles/setup-kind';
@@ -42,8 +41,6 @@ const CLUSTER_NAME: string = 'kind-cluster';
 const CLUSTER_CREATION_TIMEOUT: number = 300_000;
 const KIND_NODE: string = `${CLUSTER_NAME}-control-plane`;
 const RESOURCE_NAME: string = 'kind';
-const KUBERNETES_CONTEXT: string = `kind-${CLUSTER_NAME}`;
-const KUBERNETES_NAMESPACE: string = 'default';
 const PVC_NAME: string = 'test-pvc-resource';
 const PVC_POD_NAME: string = 'test-pod-pvcs';
 const CONFIG_MAP_NAME: string = 'test-configmap-resource';
@@ -51,12 +48,6 @@ const SECRET_NAME: string = 'test-secret-resource';
 const SECRET_POD_NAME: string = 'test-pod-configmaps-secrets';
 const DEPLOYMENT_NAME: string = 'test-deployment-resource';
 const CRON_JOB_NAME: string = 'test-cronjob-resource';
-
-const KUBERNETES_RUNTIME = {
-  runtime: PlayYamlRuntime.Kubernetes,
-  kubernetesContext: KUBERNETES_CONTEXT,
-  kubernetesNamespace: KUBERNETES_NAMESPACE,
-};
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -206,11 +197,11 @@ test.describe('Kubernetes resources End-to-End test', { tag: '@k8s_e2e' }, () =>
   test.describe
     .serial('PVC lifecycle test', () => {
       test('Create a new PVC resource', async ({ page }) => {
-        await createKubernetesResource(page, KubernetesResources.PVCs, PVC_NAME, PVC_YAML_PATH, KUBERNETES_RUNTIME);
+        await createKubernetesResource(page, KubernetesResources.PVCs, PVC_NAME, PVC_YAML_PATH);
         await checkKubernetesResourceState(page, KubernetesResources.PVCs, PVC_NAME, KubernetesResourceState.Stopped);
       });
       test('Bind the PVC to a pod', async ({ page }) => {
-        await applyYamlFileToCluster(page, PVC_POD_YAML_PATH, KUBERNETES_RUNTIME);
+        await applyYamlFileToCluster(page, PVC_POD_YAML_PATH);
         await checkKubernetesResourceState(
           page,
           KubernetesResources.Pods,
@@ -231,7 +222,6 @@ test.describe('Kubernetes resources End-to-End test', { tag: '@k8s_e2e' }, () =>
           KubernetesResources.ConfigMapsSecrets,
           CONFIG_MAP_NAME,
           CONFIG_MAP_YAML_PATH,
-          KUBERNETES_RUNTIME,
         );
         await checkKubernetesResourceState(
           page,
@@ -241,13 +231,7 @@ test.describe('Kubernetes resources End-to-End test', { tag: '@k8s_e2e' }, () =>
         );
       });
       test('Create Secret resource', async ({ page }) => {
-        await createKubernetesResource(
-          page,
-          KubernetesResources.ConfigMapsSecrets,
-          SECRET_NAME,
-          SECRET_YAML_PATH,
-          KUBERNETES_RUNTIME,
-        );
+        await createKubernetesResource(page, KubernetesResources.ConfigMapsSecrets, SECRET_NAME, SECRET_YAML_PATH);
         await checkKubernetesResourceState(
           page,
           KubernetesResources.ConfigMapsSecrets,
@@ -258,7 +242,7 @@ test.describe('Kubernetes resources End-to-End test', { tag: '@k8s_e2e' }, () =>
       test('Can load config and secrets via env. var in pod', async ({ page }) => {
         test.setTimeout(120_000);
 
-        await applyYamlFileToCluster(page, SECRET_POD_YAML_PATH, KUBERNETES_RUNTIME);
+        await applyYamlFileToCluster(page, SECRET_POD_YAML_PATH);
         await checkKubernetesResourceState(
           page,
           KubernetesResources.Pods,
@@ -277,13 +261,7 @@ test.describe('Kubernetes resources End-to-End test', { tag: '@k8s_e2e' }, () =>
     .serial('Deployment lifecycle test', () => {
       test('Create a Kubernetes deployment resource', async ({ page }) => {
         test.setTimeout(90_000);
-        await createKubernetesResource(
-          page,
-          KubernetesResources.Deployments,
-          DEPLOYMENT_NAME,
-          DEPLOYMENT_YAML_PATH,
-          KUBERNETES_RUNTIME,
-        );
+        await createKubernetesResource(page, KubernetesResources.Deployments, DEPLOYMENT_NAME, DEPLOYMENT_YAML_PATH);
         await checkKubernetesResourceState(
           page,
           KubernetesResources.Deployments,
@@ -311,13 +289,7 @@ test.describe('Kubernetes resources End-to-End test', { tag: '@k8s_e2e' }, () =>
   test.describe
     .serial('Cronjobs lifecycle test', () => {
       test('Create and verify a running Kubernetes cronjob', async ({ page }) => {
-        await createKubernetesResource(
-          page,
-          KubernetesResources.Cronjobs,
-          CRON_JOB_NAME,
-          CRON_JOB_YAML_PATH,
-          KUBERNETES_RUNTIME,
-        );
+        await createKubernetesResource(page, KubernetesResources.Cronjobs, CRON_JOB_NAME, CRON_JOB_YAML_PATH);
         await checkKubernetesResourceState(
           page,
           KubernetesResources.Cronjobs,

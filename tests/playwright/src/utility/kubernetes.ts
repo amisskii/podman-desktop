@@ -22,7 +22,6 @@ import type { Page } from '@playwright/test';
 import test, { expect as playExpect } from '@playwright/test';
 
 import type { KubernetesResourceState } from '../model/core/states';
-import type { PlayKubernetesOptions } from '../model/core/types';
 import { KubernetesResources } from '../model/core/types';
 import { ContainerDetailsPage } from '../model/pages/container-details-page';
 import { PodsPage } from '../model/pages/pods-page';
@@ -56,12 +55,11 @@ export async function createKubernetesResource(
   resourceType: KubernetesResources,
   resourceName: string,
   resourceYamlPath: string,
-  kubernetesRuntime: PlayKubernetesOptions,
 ): Promise<void> {
   return test.step(`Create ${resourceType} kubernetes resource: ${resourceName}`, async () => {
     const navigationBar = new NavigationBar(page);
 
-    await applyYamlFileToCluster(page, resourceYamlPath, kubernetesRuntime);
+    await applyYamlFileToCluster(page, resourceYamlPath);
     const kubernetesBar = await navigationBar.openKubernetes();
     const kubernetesResourcePage = await kubernetesBar.openTabPage(resourceType);
     await playExpect(kubernetesResourcePage.heading).toBeVisible();
@@ -130,12 +128,8 @@ export async function checkKubernetesResourceState(
   });
 }
 
-export async function applyYamlFileToCluster(
-  page: Page,
-  resourceYamlPath: string,
-  kubernetesRuntime: PlayKubernetesOptions,
-): Promise<PodsPage> {
-  return test.step(`Apply YAML file to Kubernetes cluster (${kubernetesRuntime}) using Kubectl`, async () => {
+export async function applyYamlFileToCluster(page: Page, resourceYamlPath: string): Promise<PodsPage> {
+  return test.step(`Apply YAML file to Kubernetes cluster using Kubectl`, async () => {
     // workaround for missing option to deploy kube yaml into cluster via UI
     // test kubectl is present
     try {
