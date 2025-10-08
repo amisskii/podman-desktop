@@ -28,4 +28,4 @@ test: |
   pnpm install
   pnpm test:e2e
   EXIT_CODE=$?
-  bash "$TMT_TREE/tmt/scripts/create-results.sh" "$EXIT_CODE" "e2e"
+  bash "$TMT_TREE/tests/tmt/scripts/create-results.sh" "$EXIT_CODE" "e2e"
