@@ -76,7 +76,7 @@ jobs:
           api_key: ${{ secrets.TF_TOKEN }}
           create_github_summary: "false"
           compose: ${{ matrix.fedora-version }}
-          tmt_plan_filter: 'name:/tmt/plans/pd-e2e-plan/${{ env.NPM_TARGET }}'
+          tmt_plan_filter: 'name:/tests/tmt/plans/pd-e2e-plan/${{ env.NPM_TARGET }}'
           variables: FORK=${{ env.FORK }};BRANCH=${{ env.BRANCH }};COMPOSE=${{ matrix.fedora-version }};ARCH=x86_64;PODMAN_VERSION=${{ env.PODMAN_VERSION }}
 
       - name: Extract Testing Farm work ID and base URL
