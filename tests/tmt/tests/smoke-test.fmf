@@ -25,6 +25,10 @@ framework: shell
 test: |
   set +e
   cd $TMT_TREE
+  if [ "$BRANCH" != "main" ]; then
+    git fetch origin "$BRANCH"
+    git checkout "$BRANCH"
+  fi
   pnpm install
   pnpm test:e2e:smoke
   EXIT_CODE=$?
