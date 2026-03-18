@@ -42,6 +42,7 @@ export class BuildImagePage extends BasePage {
   readonly archLessOptionsButton: Locator;
   readonly terminalContent: Locator;
   readonly targetDropdownButton: Locator;
+  readonly registryValidationCheckbox: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -66,6 +67,7 @@ export class BuildImagePage extends BasePage {
     this.archLessOptionsButton = this.platformRegion.getByRole('button', { name: 'Show less options' });
     this.terminalContent = page.locator('.xterm-rows');
     this.targetDropdownButton = page.getByRole('button', { name: 'target' });
+    this.registryValidationCheckbox = page.getByRole('checkbox', { name: 'validate registries' });
   }
 
   async buildImage(
@@ -185,6 +187,20 @@ export class BuildImagePage extends BasePage {
         await playExpect.poll(async () => logRow.textContent()).not.toContain('Error');
       }),
     );
+  }
+
+  async toggleRegistryValidation(enabled: boolean): Promise<void> {
+    return test.step(`Set registry validation to ${enabled}`, async () => {
+      const isChecked = await this.registryValidationCheckbox.isChecked();
+      if (isChecked !== enabled) {
+        await this.registryValidationCheckbox.click();
+      }
+      await playExpect(this.registryValidationCheckbox).toBeChecked({ checked: enabled });
+    });
+  }
+
+  async isRegistryValidationEnabled(): Promise<boolean> {
+    return await this.registryValidationCheckbox.isChecked();
   }
 
   private async fillBuildImageForm(

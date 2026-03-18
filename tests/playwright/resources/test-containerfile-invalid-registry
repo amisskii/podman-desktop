@@ -1,0 +1,2 @@
+FROM invalid-registry.example.com/nonexistent/image:latest
+CMD ["/bin/sh", "-c", "echo 'This should fail during validation!'"]
