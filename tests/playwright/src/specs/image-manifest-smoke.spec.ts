@@ -104,12 +104,9 @@ test.describe
           const dockerfilePath = path.resolve(__dirname, '..', '..', 'resources', 'test-containerfile');
           const contextDirectory = path.resolve(__dirname, '..', '..', 'resources');
 
-          imagesPage = await buildImagePage.buildImage(
-            manifestLabelSimple,
-            dockerfilePath,
-            contextDirectory,
-            architectures,
-          );
+          imagesPage = await buildImagePage.buildImage(imageNameSimple, dockerfilePath, contextDirectory, {
+            archType: architectures,
+          });
           await playExpect
             .poll(async () => await imagesPage.waitForImageExists(manifestLabelSimple, 60_000), { timeout: 0 })
             .toBeTruthy();
@@ -232,12 +229,18 @@ test.describe
           );
           const contextDirectory = path.resolve(__dirname, '..', '..', 'resources', 'alphine-hello');
 
-          imagesPage = await buildImagePage.buildImage(
-            manifestLabelComplex,
-            dockerfilePath,
-            contextDirectory,
-            architectures,
-          );
+          try {
+            imagesPage = await buildImagePage.buildImage(manifestLabelComplex, dockerfilePath, contextDirectory, {
+              archType: architectures,
+            });
+          } catch (error) {
+            skipTests = true;
+            await deleteImageManifest(page, manifestLabelComplex);
+            if (!!isWindows && provider?.toLocaleLowerCase().trim() === 'wsl') {
+              test.skip(true, 'Building cross-architecture images with the WSL hypervisor is not working yet');
+            }
+            throw error;
+          }
 
           await playExpect
             .poll(async () => await imagesPage.waitForImageExists(manifestLabelComplex, 60_000), { timeout: 0 })
