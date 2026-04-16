@@ -231,8 +231,11 @@ export class ElectronRunner extends Runner {
         height: 700,
       },
     };
-    const swiftShader = process.platform === 'linux' && process.env.LIBGL_ALWAYS_SOFTWARE === '1';
-    const chromiumArgs = swiftShader ? ['--use-gl=swiftshader'] : [];
+    const softwareRendering = process.platform === 'linux' && process.env.LIBGL_ALWAYS_SOFTWARE === '1';
+    // --disable-gpu skips the GPU subprocess entirely (no DRI3/EGL display probe).
+    // --use-gl=swiftshader routes any remaining GL calls through Chromium's bundled CPU renderer.
+    // Both are needed on GPU-less VMs (e.g. Azure Hyper-V) where the display probe hangs.
+    const chromiumArgs = softwareRendering ? ['--disable-gpu', '--use-gl=swiftshader'] : [];
     const args = pdArgs ? [...chromiumArgs, pdArgs] : [...chromiumArgs, '.'];
     // executablePath defaults to this package's installation location: node_modules/.bin/electron
     const executablePath = pdArgs ? join(pdArgs, 'node_modules', '.bin', 'electron') : (pdBinary ?? undefined);
