@@ -231,7 +231,9 @@ export class ElectronRunner extends Runner {
         height: 700,
       },
     };
-    const args = pdArgs ? [pdArgs] : ['.'];
+    const swiftShader = process.platform === 'linux' && process.env.LIBGL_ALWAYS_SOFTWARE === '1';
+    const chromiumArgs = swiftShader ? ['--use-gl=swiftshader'] : [];
+    const args = pdArgs ? [...chromiumArgs, pdArgs] : [...chromiumArgs, '.'];
     // executablePath defaults to this package's installation location: node_modules/.bin/electron
     const executablePath = pdArgs ? join(pdArgs, 'node_modules', '.bin', 'electron') : (pdBinary ?? undefined);
     const timeout = 45000;
