@@ -190,83 +190,37 @@ If the start script exits with a non-zero code, report the error output to the u
 
 Do not retry the script automatically — let the user decide after seeing the error.
 
-#### Connect and verify (both modes)
+#### Extract the CDP port
 
-When the start script prints `Ready — call mcp__podman-desktop-mcp__connect(...)`, extract the port number from that line and connect:
+When the start script prints `Ready — call mcp__podman-desktop-mcp__connect(...)`, extract the port number from that line. You will pass it to the Haiku agent in the next phase.
 
-```text
-mcp__podman-desktop-mcp__connect({ port: PORT })
-```
+### Phase 4: Scout — identify needed references (Haiku agent)
 
-After connecting, check the window title:
+Spawn a Haiku agent to connect, perform initial setup, and analyze the task. The scout determines which operation reference files are needed — it does NOT execute the task.
 
-```text
-mcp__podman-desktop-mcp__evaluate({ script: "document.title" })
-```
+1. Read `.agents/skills/mcp-testing/scout-prompt.md`
+2. Spawn an agent with `model: "haiku"`, passing the scout prompt prepended with `CDP port: {PORT}. Task: {TASK}`
+3. The scout returns a JSON response: `{"areas": [...], "summary": "..."}`
 
-The result should contain "Podman Desktop". If it contains "DevTools":
+**After the scout returns:**
 
-1. Disconnect immediately: `mcp__podman-desktop-mcp__disconnect()`
-2. Re-run the startup script — it closes any DevTools targets automatically via `close_devtools_targets`, then reconnect.
+1. Parse the `areas` array from the JSON response
+2. For each area, read the matching file from `.agents/skills/mcp-testing/references/operations/{area}.md`
+3. Proceed to Phase 5
 
-### Phase 4: Initial Setup (automatic)
+### Phase 5: Execute task with embedded references (Haiku agent)
 
-After connecting, perform these steps automatically without asking:
+Construct the execute prompt with references embedded:
 
-**1. Handle Onboarding Dialog** (appears on first launch — disable telemetry but do NOT close it):
+1. Start with: `CDP port: {PORT}. Task: {TASK}`
+2. Read `.agents/skills/mcp-testing/agent-prompt.md` and append its full content
+3. Append a `## Operation References` section containing the full content of each reference file loaded in Phase 4, separated by `### {area}` headings
 
-```text
-mcp__podman-desktop-mcp__evaluate({
-  script: `
-    const skipButton = Array.from(document.querySelectorAll('button'))
-      .find(b => b.textContent.trim() === 'Skip');
-    if (skipButton) {
-      const telemetry = document.querySelector('input[aria-label="Enable telemetry"]');
-      if (telemetry?.checked) telemetry.click();
-      'Onboarding dialog present — telemetry disabled (dialog left open for testing)';
-    } else {
-      'No onboarding dialog found';
-    }
-  `
-})
-```
+Spawn a Haiku agent with `model: "haiku"` and this combined prompt. Do not summarize or truncate any part.
 
-> **Do not close the onboarding dialog automatically.** Some test scenarios need to interact with it. The task in Phase 5 will decide whether to skip it or test it.
+The agent returns a summary of what it found or did, and optionally a structured workflow trace (for E2E test writing tasks).
 
-**2. Close Feedback Dialog** (appears after onboarding is completed — safe to run when absent):
-
-```text
-mcp__podman-desktop-mcp__evaluate({
-  script: `
-    const dialog = document.querySelector('[role="dialog"][aria-label="Share your feedback"]');
-    if (dialog) {
-      dialog.querySelector('button[aria-label="Close"]')?.click();
-      'Closed feedback dialog';
-    } else {
-      'No feedback dialog';
-    }
-  `
-})
-```
-
-**3. Take Initial Snapshot:**
-
-```text
-mcp__podman-desktop-mcp__snapshot()
-```
-
-Summarize what's visible on the current page to the user (including whether the onboarding dialog is showing).
-
-### Phase 5: Execute Task
-
-Execute the task provided when the skill was invoked. The task can be anything — exploring a page, testing a feature, verifying a workflow, checking UI state, etc. Work autonomously:
-
-- Use MCP tools (`snapshot`, `screenshot`, `evaluate`, `click`, `getText`, etc.) as needed — don't ask permission for individual actions.
-- Take screenshots and snapshots at your own judgment to verify state and gather information.
-- If something fails or is unexpected, investigate and retry before giving up.
-- When the task is complete, summarize what you found or did.
-
-**After completing the task**, use `AskUserQuestion`:
+**After the agent returns**, use `AskUserQuestion`:
 
 - **Question:** `What would you like to do next?`
 - **Header:** `Next`
@@ -274,21 +228,13 @@ Execute the task provided when the skill was invoked. The task can be anything �
   1. `Continue testing` — Provide another task (user enters free text via "Other")
   2. `Done — finish testing` — Disconnect and clean up
 
-If the user continues, execute the new task the same way and ask again when done. If done, proceed to Phase 6.
+If the user continues, run Phase 4 (scout) again with the new task. If done, proceed to Phase 6.
 
 ### Phase 6: Cleanup
 
-**Step 1 — Disconnect from MCP:**
-
-```text
-mcp__podman-desktop-mcp__disconnect()
-```
-
-**Step 2 — Ask about the app:**
-
 Use `AskUserQuestion`:
 
-- **Question:** `Disconnected from MCP. What should I do with the app?`
+- **Question:** `What should I do with the app?`
 - **Header:** `Cleanup`
 - **Options:**
   1. `Leave running` — Keep the app alive so you can reconnect later
@@ -313,55 +259,6 @@ bash .agents/skills/mcp-testing/stop.sh
 pwsh .agents/skills/mcp-testing/stop.ps1
 ```
 
-## Selector Strategy
-
-When interacting with elements, prefer in this order:
-
-1. **ARIA roles and accessible names** (most stable)
-
-   ```javascript
-   document.querySelector('button[aria-label="Create"]').click();
-   ```
-
-2. **Text content**
-
-   ```javascript
-   Array.from(document.querySelectorAll('button'))
-     .find(b => b.textContent.includes('Pull'))
-     .click();
-   ```
-
-3. **data-testid attributes**
-
-   ```javascript
-   document.querySelector('[data-testid="help-menu"]').click();
-   ```
-
-4. **CSS / href selectors** (last resort)
-
-   ```javascript
-   document.querySelector('a[href="/containers"]').click();
-   ```
-
-## Common Navigation URLs
-
-- Dashboard: `/`
-- Containers: `/containers`
-- Pods: `/pods`
-- Images: `/images`
-- Volumes: `/volumes`
-- Networks: `/networks`
-- Kubernetes: `/kubernetes`
-- Extensions: `/extensions`
-
-Navigate using JavaScript evaluation:
-
-```text
-mcp__podman-desktop-mcp__evaluate({
-  script: `document.querySelector('a[href="/containers"]').click(); 'Navigated to Containers';`
-})
-```
-
 ## Troubleshooting
 
 ### `pnpm: command not found`
@@ -372,21 +269,9 @@ npm install -g pnpm
 
 Then re-open your terminal and verify with `pnpm --version`.
 
-### Connected to DevTools Instead of App
-
-**Symptom:** `connect` returns `Window title: DevTools`.
-
-**Fix:**
-
-1. `mcp__podman-desktop-mcp__disconnect()`
-2. Re-run the startup script for your mode — it closes DevTools targets automatically via `close_devtools_targets`
-3. `mcp__podman-desktop-mcp__connect({ port: PORT })`
-
 ### Production App Without CDP
 
 **Symptom:** Probe shows `PROD_RUNNING=true` but `PROD_CDP_PORT=none`.
-
-**Cause:** The production app was launched without the `--remote-debugging-port` flag.
 
 **Fix:** Run `start.sh --mode prod` (or `start.ps1 -Mode prod`) — it detects this case automatically, closes the running app, and relaunches it with CDP enabled.
 
@@ -396,54 +281,12 @@ Then re-open your terminal and verify with `pnpm --version`.
 
 **If startup still times out after 120s:** the production app may have restarted in the gap between detection and the kill, or a non-Podman-Desktop process holds port 9222. Run the stop script, verify port 9222 is free (`lsof -ti :9222`), then re-run the start script.
 
-### MCP Tools Become Unavailable Mid-Session
-
-**Symptom:** `mcp__podman-desktop-mcp__*` tools return errors.
-
-**Do not ask the user to restart the MCP server.** Try reconnecting:
-
-```text
-mcp__podman-desktop-mcp__connect({ port: PORT })
-```
-
-If the port is gone, re-run the startup script.
-
-### Element Not Found
-
-1. Use `snapshot()` to see current page structure
-2. Wait for page load: `mcp__podman-desktop-mcp__wait({ selector: 'main', timeout: 5000 })`
-3. Check if element is in a different frame or webview
-
-### Test Isolation (dev mode)
-
-Each `pnpm watch` session uses the same user data directory. For a clean state:
-
-```bash
-PODMAN_DESKTOP_HOME_DIR=/tmp/pd-dev-test pnpm watch
-```
-
-### "Too Many Open Files" Error (dev mode)
-
-```bash
-ulimit -n 65536
-```
-
-Add to `~/.bashrc` or `~/.zshrc` to make it permanent.
-
 ## Quick Reference
 
-| Command                                                   | Purpose                                        |
-| --------------------------------------------------------- | ---------------------------------------------- |
-| `bash probe.sh`                                           | Detect environment (what's running, CDP ports) |
-| `bash start.sh --mode dev`                                | Full dev startup                               |
-| `bash start.sh --mode dev-fast`                           | Fast-path (dev already running)                |
-| `bash start.sh --mode prod`                               | Launch/connect production app                  |
-| `mcp__podman-desktop-mcp__connect({ port: PORT })`        | Connect to app                                 |
-| `mcp__podman-desktop-mcp__disconnect()`                   | Disconnect from MCP                            |
-| `mcp__podman-desktop-mcp__snapshot()`                     | Get accessibility tree                         |
-| `mcp__podman-desktop-mcp__evaluate({ script: '...' })`    | Run JavaScript in renderer                     |
-| `mcp__podman-desktop-mcp__screenshot({ fullPage: true })` | Capture screenshot                             |
-
-## Additional Resources
-
-- **Example commands and selectors:** `examples.md` — Ready-to-use MCP command examples and selectors reference derived from Playwright Page Object Models
+| Command                                                    | Purpose                                        |
+| ---------------------------------------------------------- | ---------------------------------------------- |
+| `bash .agents/skills/mcp-testing/probe.sh`                 | Detect environment (what's running, CDP ports) |
+| `bash .agents/skills/mcp-testing/start.sh --mode dev`      | Full dev startup                               |
+| `bash .agents/skills/mcp-testing/start.sh --mode dev-fast` | Fast-path (dev already running)                |
+| `bash .agents/skills/mcp-testing/start.sh --mode prod`     | Launch/connect production app                  |
+| `bash .agents/skills/mcp-testing/stop.sh`                  | Stop app and free port                         |
