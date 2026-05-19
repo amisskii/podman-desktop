@@ -82,7 +82,7 @@ export class BuildImagePage extends BasePage {
 
       await playExpect(this.doneButton).toBeEnabled({ timeout: timeout });
 
-      await this.validateBuildLogs(archType.length, errorText);
+      await this.validateBuildLogs(archType.length, errorText, timeout);
       await this.doneButton.scrollIntoViewIfNeeded();
       await this.doneButton.click();
       console.log(`Image ${imageName} has been built successfully!`);
@@ -177,8 +177,12 @@ export class BuildImagePage extends BasePage {
     }
   }
 
-  private async validateBuildLogs(archCount: number, errorText?: string | RegExp): Promise<void> {
-    await playExpect(this.terminalContent).toBeVisible();
+  private async validateBuildLogs(
+    archCount: number,
+    errorText: string | RegExp | undefined,
+    timeout: number,
+  ): Promise<void> {
+    await playExpect(this.terminalContent).toBeVisible({ timeout });
     const text = (await this.terminalContent.innerText()) ?? '';
     if (errorText) {
       playExpect(text).toContain(errorText);
@@ -186,7 +190,7 @@ export class BuildImagePage extends BasePage {
     }
     await playExpect
       .poll(async () => (((await this.terminalContent.innerText()) ?? '').match(/Successfully built/g) ?? []).length, {
-        timeout: 30_000,
+        timeout,
       })
       .toBe(archCount);
   }
@@ -203,11 +207,6 @@ export class BuildImagePage extends BasePage {
         .poll(async () => await this.registryValidationCheckbox.isChecked(), { timeout: 10_000 })
         .toBe(enabled);
     });
-  }
-
-  async isRegistryValidationEnabled(): Promise<boolean> {
-    await playExpect(this.registryValidationCheckbox).toBeVisible();
-    return this.registryValidationCheckbox.isChecked();
   }
 
   private async fillBuildImageForm(

@@ -21,7 +21,7 @@ import fsPromises from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import { isLinux, isMac, isWindows } from './platform';
+import { isLinux, isMac, isWindows } from '/@/utility/platform';
 
 export type ContainerAuthConfigEntry = {
   [key: string]: {
@@ -137,6 +137,19 @@ export async function backupAuthFile(): Promise<string | undefined> {
   await fsPromises.copyFile(authFilePath, backupPath);
   console.log(`Backed up auth file to ${backupPath}`);
   return backupPath;
+}
+
+/**
+ * Ensure auth.json exists on disk (sync, safe to call at module level).
+ * Must run before Electron starts so registry-setup.ts registers its fs.watchFile watcher.
+ */
+export function ensureAuthFileExists(): void {
+  const authFilePath = getAuthFileLocation();
+  if (!fs.existsSync(authFilePath)) {
+    const authFileDir = path.dirname(authFilePath);
+    fs.mkdirSync(authFileDir, { recursive: true });
+    fs.writeFileSync(authFilePath, JSON.stringify({ auths: {} }, null, 2), 'utf8');
+  }
 }
 
 /**

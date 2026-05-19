@@ -16,45 +16,23 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
-import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { RegistriesPage } from '/@/model/pages/registries-page';
 import { expect as playExpect, test } from '/@/utility/fixtures';
 import { deleteImage } from '/@/utility/operations';
-import { isLinux, isMac, isWindows } from '/@/utility/platform';
 import {
   backupAuthFile,
-  getAuthFileLocation,
+  ensureAuthFileExists,
   injectInvalidCredentials,
   removeRegistryCredentials,
   restoreAuthFile,
 } from '/@/utility/registry-auth-config';
 import { waitForPodmanMachineStartup } from '/@/utility/wait';
 
-// All platforms: ensure auth.json exists before Electron starts so registry-setup.ts
-// registers its fs.watchFile. Without it, the extension returns early at activation and
-// credential changes written by the test are never detected.
-// On CI with freshly installed Podman (no prior podman login), auth.json may not exist yet —
-// this affects Windows (WSL, Hyper-V) and macOS (libkrun, applehv) nightly runners too.
-if (isLinux) {
-  const xdgRuntimeDir = process.env.XDG_RUNTIME_DIR;
-  if (xdgRuntimeDir) {
-    const containersDir = path.join(xdgRuntimeDir, 'containers');
-    const authJsonPath = path.join(containersDir, 'auth.json');
-    fs.mkdirSync(containersDir, { recursive: true });
-    if (!fs.existsSync(authJsonPath)) {
-      fs.writeFileSync(authJsonPath, JSON.stringify({ auths: {} }, null, 2), 'utf8');
-    }
-  }
-} else if (isMac || isWindows) {
-  const authJsonPath = getAuthFileLocation();
-  if (!fs.existsSync(authJsonPath)) {
-    fs.mkdirSync(path.dirname(authJsonPath), { recursive: true });
-    fs.writeFileSync(authJsonPath, JSON.stringify({ auths: {} }, null, 2), 'utf8');
-  }
-}
+// Must run before Electron starts so registry-setup.ts registers its fs.watchFile watcher.
+ensureAuthFileExists();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -80,6 +58,12 @@ test.beforeAll(async ({ runner, welcomePage, page }) => {
 
 test.afterAll(async ({ runner, page }) => {
   try {
+    await deleteImage(page, 'docker.io/library/valid-registry-build-test');
+    await deleteImage(page, 'docker.io/library/valid-registry-no-validation-test');
+    await deleteImage(page, 'docker.io/library/invalid-creds-validation-enabled-test');
+    await deleteImage(page, 'docker.io/library/invalid-creds-validation-disabled-test');
+    await deleteImage(page, 'ghcr.io/linuxcontainers/alpine');
+  } finally {
     await removeRegistryCredentials(TEST_REGISTRY_URL).catch((error: unknown) => {
       console.log('Failed to remove invalid credentials:', error);
     });
@@ -88,12 +72,6 @@ test.afterAll(async ({ runner, page }) => {
         console.log('Failed to restore auth file backup:', error);
       });
     }
-    await deleteImage(page, 'docker.io/library/valid-registry-build-test');
-    await deleteImage(page, 'docker.io/library/valid-registry-no-validation-test');
-    await deleteImage(page, 'docker.io/library/invalid-creds-validation-enabled-test');
-    await deleteImage(page, 'docker.io/library/invalid-creds-validation-disabled-test');
-    await deleteImage(page, 'ghcr.io/linuxcontainers/alpine');
-  } finally {
     await runner.close();
   }
 });
@@ -132,9 +110,11 @@ test.describe
         CONTEXT_DIR,
       );
 
-      playExpect(
-        await updatedImagesPage.waitForImageExists('docker.io/library/valid-registry-build-test', 30_000),
-      ).toBeTruthy();
+      await playExpect
+        .poll(async () => updatedImagesPage.waitForImageExists('docker.io/library/valid-registry-build-test', 30_000), {
+          timeout: 0,
+        })
+        .toBeTruthy();
 
       await test.step('Clean up test image', async () => {
         const imageDetailsPage = await updatedImagesPage.openImageDetails(
@@ -142,9 +122,11 @@ test.describe
         );
         await playExpect(imageDetailsPage.heading).toBeVisible();
         const finalImagesPage = await imageDetailsPage.deleteImage();
-        playExpect(
-          await finalImagesPage.waitForImageDelete('docker.io/library/valid-registry-build-test', 30_000),
-        ).toBeTruthy();
+        await playExpect
+          .poll(async () => finalImagesPage.waitForImageDelete('docker.io/library/valid-registry-build-test', 30_000), {
+            timeout: 0,
+          })
+          .toBeTruthy();
       });
     });
 
@@ -156,7 +138,7 @@ test.describe
       await playExpect(buildImagePage.heading).toBeVisible();
 
       await buildImagePage.toggleRegistryValidation(false);
-      await playExpect.poll(async () => await buildImagePage.isRegistryValidationEnabled()).toBe(false);
+      await playExpect(buildImagePage.registryValidationCheckbox).not.toBeChecked();
 
       const updatedImagesPage = await buildImagePage.buildImage(
         'valid-registry-no-validation-test',
@@ -164,9 +146,13 @@ test.describe
         CONTEXT_DIR,
       );
 
-      playExpect(
-        await updatedImagesPage.waitForImageExists('docker.io/library/valid-registry-no-validation-test', 30_000),
-      ).toBeTruthy();
+      await playExpect
+        .poll(
+          async () =>
+            updatedImagesPage.waitForImageExists('docker.io/library/valid-registry-no-validation-test', 30_000),
+          { timeout: 0 },
+        )
+        .toBeTruthy();
 
       await test.step('Clean up test image', async () => {
         const imageDetailsPage = await updatedImagesPage.openImageDetails(
@@ -174,9 +160,13 @@ test.describe
         );
         await playExpect(imageDetailsPage.heading).toBeVisible();
         const finalImagesPage = await imageDetailsPage.deleteImage();
-        playExpect(
-          await finalImagesPage.waitForImageDelete('docker.io/library/valid-registry-no-validation-test', 30_000),
-        ).toBeTruthy();
+        await playExpect
+          .poll(
+            async () =>
+              finalImagesPage.waitForImageDelete('docker.io/library/valid-registry-no-validation-test', 30_000),
+            { timeout: 0 },
+          )
+          .toBeTruthy();
       });
     });
 
@@ -192,10 +182,10 @@ test.describe
       await playExpect(buildImagePage.registryValidationCheckbox).toBeChecked();
 
       await buildImagePage.toggleRegistryValidation(false);
-      await playExpect.poll(async () => await buildImagePage.isRegistryValidationEnabled()).toBe(false);
+      await playExpect(buildImagePage.registryValidationCheckbox).not.toBeChecked();
 
       await buildImagePage.toggleRegistryValidation(true);
-      await playExpect.poll(async () => await buildImagePage.isRegistryValidationEnabled()).toBe(true);
+      await playExpect(buildImagePage.registryValidationCheckbox).toBeChecked();
     });
 
     test('Build with invalid registry credentials and validation enabled succeeds', async ({ navigationBar }) => {
@@ -228,9 +218,13 @@ test.describe
       );
 
       await test.step('Verify build succeeded despite invalid credentials', async () => {
-        playExpect(
-          await updatedImagesPage.waitForImageExists('docker.io/library/invalid-creds-validation-enabled-test', 30_000),
-        ).toBeTruthy();
+        await playExpect
+          .poll(
+            async () =>
+              updatedImagesPage.waitForImageExists('docker.io/library/invalid-creds-validation-enabled-test', 30_000),
+            { timeout: 0 },
+          )
+          .toBeTruthy();
       });
 
       await test.step('Clean up test image', async () => {
@@ -239,9 +233,13 @@ test.describe
         );
         await playExpect(imageDetailsPage.heading).toBeVisible();
         const finalImagesPage = await imageDetailsPage.deleteImage();
-        playExpect(
-          await finalImagesPage.waitForImageDelete('docker.io/library/invalid-creds-validation-enabled-test', 30_000),
-        ).toBeTruthy();
+        await playExpect
+          .poll(
+            async () =>
+              finalImagesPage.waitForImageDelete('docker.io/library/invalid-creds-validation-enabled-test', 30_000),
+            { timeout: 0 },
+          )
+          .toBeTruthy();
       });
     });
 
@@ -276,7 +274,7 @@ test.describe
       await playExpect(buildImagePage.heading).toBeVisible();
 
       await buildImagePage.toggleRegistryValidation(false);
-      await playExpect.poll(async () => await buildImagePage.isRegistryValidationEnabled()).toBe(false);
+      await playExpect(buildImagePage.registryValidationCheckbox).not.toBeChecked();
 
       const updatedImagesPage = await buildImagePage.buildImage(
         'invalid-creds-validation-disabled-test',

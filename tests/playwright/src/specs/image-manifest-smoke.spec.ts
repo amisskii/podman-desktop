@@ -229,18 +229,9 @@ test.describe
           );
           const contextDirectory = path.resolve(__dirname, '..', '..', 'resources', 'alphine-hello');
 
-          try {
-            imagesPage = await buildImagePage.buildImage(manifestLabelComplex, dockerfilePath, contextDirectory, {
-              archType: architectures,
-            });
-          } catch (error) {
-            skipTests = true;
-            await deleteImageManifest(page, manifestLabelComplex);
-            if (isWindows && provider?.toLocaleLowerCase().trim() === 'wsl') {
-              test.skip(true, 'Building cross-architecture images with the WSL hypervisor is not working yet');
-            }
-            throw error;
-          }
+          imagesPage = await buildImagePage.buildImage(manifestLabelComplex, dockerfilePath, contextDirectory, {
+            archType: architectures,
+          });
 
           await playExpect
             .poll(async () => await imagesPage.waitForImageExists(manifestLabelComplex, 60_000), { timeout: 0 })
