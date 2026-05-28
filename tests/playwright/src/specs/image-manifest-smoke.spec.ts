@@ -104,7 +104,7 @@ test.describe
           const dockerfilePath = path.resolve(__dirname, '..', '..', 'resources', 'test-containerfile');
           const contextDirectory = path.resolve(__dirname, '..', '..', 'resources');
 
-          imagesPage = await buildImagePage.buildImage(imageNameSimple, dockerfilePath, contextDirectory, {
+          imagesPage = await buildImagePage.buildImage(manifestLabelSimple, dockerfilePath, contextDirectory, {
             archType: architectures,
           });
           await playExpect
