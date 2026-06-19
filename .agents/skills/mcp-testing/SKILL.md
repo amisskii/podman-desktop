@@ -194,29 +194,12 @@ Do not retry the script automatically — let the user decide after seeing the e
 
 When the start script prints `Ready — call mcp__podman-desktop-mcp__connect(...)`, extract the port number from that line. You will pass it to the Haiku agent in the next phase.
 
-### Phase 4: Scout — identify needed references (Haiku agent)
+### Phase 4: Execute task (Haiku agent)
 
-Spawn a Haiku agent to connect, perform initial setup, and analyze the task. The scout determines which operation reference files are needed — it does NOT execute the task.
+1. Read `.agents/skills/mcp-testing/agent-prompt.md`
+2. Spawn an agent with `model: "haiku"`, passing: `CDP port: {PORT}. Task: {TASK}` followed by the full content of agent-prompt.md
 
-1. Read `.agents/skills/mcp-testing/scout-prompt.md`
-2. Spawn an agent with `model: "haiku"`, passing the scout prompt prepended with `CDP port: {PORT}. Task: {TASK}`
-3. The scout returns a JSON response: `{"areas": [...], "summary": "..."}`
-
-**After the scout returns:**
-
-1. Parse the `areas` array from the JSON response
-2. For each area, read the matching file from `.agents/skills/mcp-testing/references/operations/{area}.md`
-3. Proceed to Phase 5
-
-### Phase 5: Execute task with embedded references (Haiku agent)
-
-Construct the execute prompt with references embedded:
-
-1. Start with: `CDP port: {PORT}. Task: {TASK}`
-2. Read `.agents/skills/mcp-testing/agent-prompt.md` and append its full content
-3. Append a `## Operation References` section containing the full content of each reference file loaded in Phase 4, separated by `### {area}` headings
-
-Spawn a Haiku agent with `model: "haiku"` and this combined prompt. Do not summarize or truncate any part.
+The agent connects, performs initial setup (dialogs, compact snapshot), executes the task, and disconnects. It discovers selectors on its own via compact snapshots — no reference loading needed.
 
 The agent returns a summary of what it found or did, and optionally a structured workflow trace (for E2E test writing tasks).
 
@@ -228,9 +211,9 @@ The agent returns a summary of what it found or did, and optionally a structured
   1. `Continue testing` — Provide another task (user enters free text via "Other")
   2. `Done — finish testing` — Disconnect and clean up
 
-If the user continues, run Phase 4 (scout) again with the new task. If done, proceed to Phase 6.
+If the user continues, run Phase 4 again with the new task. If done, proceed to Phase 5.
 
-### Phase 6: Cleanup
+### Phase 5: Cleanup
 
 Use `AskUserQuestion`:
 

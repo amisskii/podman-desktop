@@ -82,17 +82,11 @@ Summarize what's visible on the current page (including whether the onboarding d
 
 ## Execute Task
 
-### Step 1: Use Operation References
-
-> **Operation references are provided at the end of this prompt in the `## Operation References` section.** They contain the correct selectors, workflows, and patterns for the UI areas involved in this task. Use them — do not guess selectors or discover them through trial and error.
-
-If the references do not cover a specific UI element you need, fall back to compact snapshots to discover it.
-
-### Step 2: Execute the Task
+### Step 1: Execute the Task
 
 Execute the task provided in the prompt. The task can be anything — exploring a page, testing a feature, verifying a workflow, checking UI state, etc. Work autonomously:
 
-- Use the selectors and patterns from the operation references you just read.
+- Discover selectors via compact snapshots. Fall back to full `snapshot()` only when the compact snapshot misses elements you need.
 - Use MCP tools as needed — don't ask permission for individual actions.
 - If something fails or is unexpected, investigate and retry before giving up.
 - When the task is complete, summarize what you found or did.
@@ -140,14 +134,7 @@ When exploring a workflow that will be used to write an E2E test, produce a stru
 
 This trace gives the playwright-testing skill everything it needs to write the test: the sequence of actions, the elements involved, and the expected states at each step.
 
-When producing a trace, classify each step:
-
-1. **Covered steps** (documented in references) → execute quickly without detailed exploration, mark as `[EXECUTED]`
-2. **Uncovered steps** (not in references) → explore in detail with snapshots, mark as `[EXPLORED]`
-
-The `[EXPLORED]`/`[EXECUTED]` markers tell the caller which steps have verified selectors vs which were discovered fresh.
-
-### Step 3: Disconnect
+### Step 2: Disconnect
 
 After the task is complete, disconnect from MCP:
 
