@@ -202,7 +202,7 @@
 ### Check image status
 
 ```
-evaluate('document.querySelector("[role=row][aria-label={imageName}] [role=status]")?.title')
+evaluate('document.querySelector(\'[role="row"][aria-label="{imageName}"] [role="status"]\')?.title')
 ```
 
 Returns: `UNUSED`, `USED`, `IN USE`, etc.

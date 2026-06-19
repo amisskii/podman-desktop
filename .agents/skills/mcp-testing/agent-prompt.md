@@ -66,7 +66,7 @@ mcp__podman-desktop-mcp__evaluate({
       })).filter(e => e.visible && e.name);
     JSON.stringify({
       title: document.title,
-      url: location.hash,
+      url: sessionStorage.getItem('last-route') || location.href,
       buttons: collect('button', 'button'),
       links: collect('a[role=\\"link\\"], nav a', 'link'),
       inputs: collect('input, textarea', 'input'),
@@ -160,7 +160,7 @@ mcp__podman-desktop-mcp__evaluate({
       })).filter(e => e.visible && e.name);
     JSON.stringify({
       title: document.title,
-      url: location.hash,
+      url: sessionStorage.getItem('last-route') || location.href,
       buttons: collect('button', 'button'),
       links: collect('a[role=\\"link\\"], nav a', 'link'),
       inputs: collect('input, textarea', 'input'),

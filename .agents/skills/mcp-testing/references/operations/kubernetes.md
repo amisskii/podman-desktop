@@ -132,7 +132,7 @@ nav[aria-label="Kubernetes Navigation Bar"]
 
 1. Navigate to Kubernetes Dashboard
 2. Click namespace dropdown: `click('[aria-label="Kubernetes Namespace"] button:has-text("Namespace")')`
-3. Select namespace from dropdown
+3. Click the namespace option: `click('[aria-label="Kubernetes Namespace"] button[aria-label="{namespace}"]')`
 
 ### Apply YAML to cluster
 

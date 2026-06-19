@@ -201,7 +201,7 @@
 ### Check container state
 
 ```
-evaluate('document.querySelector("[role=row][aria-label={containerName}] [role=status]")?.title')
+evaluate('document.querySelector(\'[role="row"][aria-label="{containerName}"] [role="status"]\')?.title')
 ```
 
 Returns: `RUNNING`, `STOPPED`, `EXITED`, etc.

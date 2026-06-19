@@ -115,7 +115,7 @@
 ### Check if volume is used
 
 ```
-evaluate('!!document.querySelector("[role=row][aria-label={volumeName}] [title=Used]")')
+evaluate('!!document.querySelector(\'[role="row"][aria-label="{volumeName}"] [title="Used"]\')')
 ```
 
 ## Gotchas

@@ -93,7 +93,7 @@
 
 1. View extension catalog (steps 1-3)
 2. Click Install: `click('[role="group"][aria-label="{extensionName}"] button:has-text("Install")')`
-3. Wait for installed: `wait('text="Already installed"', { timeout: 60000 })`
+3. Wait for installed: `wait('[role="group"][aria-label="{extensionName}"] text="Already installed"', { timeout: 60000 })`
 
 ### Install custom extension (OCI)
 

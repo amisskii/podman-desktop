@@ -112,7 +112,7 @@ getText('[role="row"][aria-label="{toolName}"] [aria-label="cli-version"]')
 ### Check if CLI tool is installed
 
 ```
-evaluate('!!document.querySelector("[role=row][aria-label={toolName}] [aria-label=cli-version]")')
+evaluate('!!document.querySelector(\'[role="row"][aria-label="{toolName}"] [aria-label="cli-version"]\')')
 ```
 
 ## Gotchas

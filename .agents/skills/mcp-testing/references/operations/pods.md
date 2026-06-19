@@ -157,7 +157,7 @@
 ### Check pod state
 
 ```
-evaluate('document.querySelector("[role=row][aria-label={podName}] [role=status]")?.title')
+evaluate('document.querySelector(\'[role="row"][aria-label="{podName}"] [role="status"]\')?.title')
 ```
 
 ## Gotchas

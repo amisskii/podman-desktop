@@ -44,7 +44,7 @@
 Use `evaluate` to click tabs since they use regex matching:
 
 ```
-evaluate('Array.from(document.querySelectorAll("button")).find(b => /\\bAll$/.test(b.textContent))?.click()')
+evaluate('Array.from(document.querySelectorAll("button")).find(b => /\\bAll\\b/.test(b.textContent))?.click()')
 ```
 
 ### Status
@@ -126,7 +126,7 @@ evaluate('document.querySelectorAll("li > button").length')
 
 ## Gotchas
 
-- Palette tabs use count badges (e.g., "All 42") — match with `/\bAll$/` regex, not exact text
+- Palette tabs use count badges (e.g., "All 42") — match with `/\bAll\b/` regex, not exact text
 - F1 toggles the palette — pressing again closes it
 - The palette overlays the current page — it doesn't navigate away
 - Results update as you type — wait briefly after filling input before clicking
