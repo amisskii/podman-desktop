@@ -14,8 +14,8 @@
 [role="region"][aria-label="extensions"]
 ├── [role="region"][aria-label="header"]
 │   ├── [role="heading"]                        ← "Extensions"
-│   └── button[aria-label="Installed"]          ← tab buttons
-│       button[aria-label="Catalog"]
+│   └── button:has-text("Installed")             ← tab buttons (no aria-label)
+│       button:has-text("Catalog")
 │       button:has-text("Local Extensions")
 ├── [role="region"][aria-label="content"]
 │   └── [role="region"][aria-label="{extensionLabel}"]  ← extension cards
@@ -28,8 +28,8 @@
 | Element               | Selector                                                        |
 | --------------------- | --------------------------------------------------------------- |
 | Page heading          | `[aria-label="header"] [role="heading"]:has-text("extensions")` |
-| Installed tab         | `button[aria-label="Installed"]`                                |
-| Catalog tab           | `button[aria-label="Catalog"]`                                  |
+| Installed tab         | `button:has-text("Installed")`                                  |
+| Catalog tab           | `button:has-text("Catalog")`                                    |
 | Local Extensions tab  | `button:has-text("Local Extensions")`                           |
 | Install custom button | `[aria-label="Install custom"]`                                 |
 
@@ -44,15 +44,15 @@
 
 ### ExtensionCard (per extension in Installed list)
 
-| Element         | Selector                                                                                           |
-| --------------- | -------------------------------------------------------------------------------------------------- |
-| Card region     | `[aria-label="content"] [role="region"][aria-label="{extensionLabel}"]`                            |
-| Details link    | `[role="region"][aria-label="{label}"] button:has-text("{name} extension details")`                |
-| Status          | `[role="region"][aria-label="{label}"] [aria-label="Extension Status Label"]`                      |
-| Start (enable)  | `[role="region"][aria-label="{label}"] [aria-label="Extension Actions"] button:has-text("Start")`  |
-| Stop (disable)  | `[role="region"][aria-label="{label}"] [aria-label="Extension Actions"] button:has-text("Stop")`   |
-| Delete (remove) | `[role="region"][aria-label="{label}"] [aria-label="Extension Actions"] button:has-text("Delete")` |
-| Edit properties | `[role="region"][aria-label="{label}"] button:has-text("Edit properties of {name} extension")`     |
+| Element         | Selector                                                                                                         |
+| --------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Card region     | `[aria-label="content"] [role="region"][aria-label="{extensionLabel}"]`                                          |
+| Details link    | `[role="region"][aria-label="{extensionLabel}"] button:has-text("{extensionName} extension details")`            |
+| Status          | `[role="region"][aria-label="{extensionLabel}"] [aria-label="Extension Status Label"]`                           |
+| Start (enable)  | `[role="region"][aria-label="{extensionLabel}"] [aria-label="Extension Actions"] button:has-text("Start")`       |
+| Stop (disable)  | `[role="region"][aria-label="{extensionLabel}"] [aria-label="Extension Actions"] button:has-text("Stop")`        |
+| Delete (remove) | `[role="region"][aria-label="{extensionLabel}"] [aria-label="Extension Actions"] button:has-text("Delete")`      |
+| Edit properties | `[role="region"][aria-label="{extensionLabel}"] button:has-text("Edit properties of {extensionName} extension")` |
 
 ### ExtensionDetailsPage
 
@@ -68,12 +68,12 @@
 
 ### ExtensionCatalogCard (per extension in Catalog)
 
-| Element           | Selector                                                              |
-| ----------------- | --------------------------------------------------------------------- |
-| Card              | `[role="group"][aria-label="{extensionName}"]`                        |
-| More details      | `[role="group"][aria-label="{name}"] button:has-text("More details")` |
-| Install button    | `[role="group"][aria-label="{name}"] button:has-text("Install")`      |
-| Already installed | text "Already installed" within card                                  |
+| Element           | Selector                                                                       |
+| ----------------- | ------------------------------------------------------------------------------ |
+| Card              | `[role="group"][aria-label="{extensionName}"]`                                 |
+| More details      | `[role="group"][aria-label="{extensionName}"] button:has-text("More details")` |
+| Install button    | `[role="group"][aria-label="{extensionName}"] button:has-text("Install")`      |
+| Already installed | text "Already installed" within card                                           |
 
 ## Operations
 
@@ -81,13 +81,13 @@
 
 1. Navigate: `click('nav[aria-label="AppNavigation"] a[aria-label="Extensions"]')`
 2. Wait for page: `wait('[aria-label="header"] [role="heading"]:has-text("extensions")')`
-3. Click Installed: `click('button[aria-label="Installed"]')`
+3. Click Installed: `click('button:has-text("Installed")')`
 
 ### View extension catalog
 
 1. Navigate to Extensions page (steps 1-2)
-2. Click Catalog: `click('button[aria-label="Catalog"]')`
-3. Wait for catalog cards: `wait('[role="group"]')`
+2. Click Catalog: `click('button:has-text("Catalog")')`
+3. Wait for catalog cards: `wait('[role="group"][aria-label] button:has-text("More details")')`
 
 ### Install extension from catalog
 
@@ -108,14 +108,14 @@
 ### Open extension details
 
 1. Navigate to Extensions page, Installed tab
-2. Click details: `click('[role="region"][aria-label="{extensionLabel}"] button:has-text("{name} extension details")')`
+2. Click details: `click('[role="region"][aria-label="{extensionLabel}"] button:has-text("{extensionName} extension details")')`
 3. Wait for details: `wait('[aria-label="Header"] [role="heading"]:has-text("{extensionName}")')`
 
 ### Enable/Disable extension
 
 1. **From card** (Installed tab):
-   - Start: `click('[role="region"][aria-label="{label}"] [aria-label="Extension Actions"] button:has-text("Start")')`
-   - Stop: `click('[role="region"][aria-label="{label}"] [aria-label="Extension Actions"] button:has-text("Stop")')`
+   - Start: `click('[role="region"][aria-label="{extensionLabel}"] [aria-label="Extension Actions"] button:has-text("Start")')`
+   - Stop: `click('[role="region"][aria-label="{extensionLabel}"] [aria-label="Extension Actions"] button:has-text("Stop")')`
 
 2. **From details page**:
    - Start: `click('[aria-label="Header"] button:has-text("Start")')`
@@ -123,7 +123,7 @@
 
 ### Delete extension
 
-1. **From card**: `click('[role="region"][aria-label="{label}"] [aria-label="Extension Actions"] button:has-text("Delete")')`
+1. **From card**: `click('[role="region"][aria-label="{extensionLabel}"] [aria-label="Extension Actions"] button:has-text("Delete")')`
 2. **From details**: `click('[aria-label="Header"] button:has-text("Delete")')`
 
 ### Check extension status

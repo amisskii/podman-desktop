@@ -28,9 +28,9 @@
 | Add registry button | `button:has-text("Add registry")`                                                   |
 | Registries table    | `[role="table"][aria-label="Registries"]`                                           |
 | Registry row        | `[role="table"][aria-label="Registries"] [role="row"][aria-label="{registryName}"]` |
-| Kebab menu          | `[role="row"][aria-label="{name}"] button[aria-label="kebab menu"]`                 |
-| Edit password       | `[role="row"][aria-label="{name}"] [title="Edit password"]`                         |
-| Remove              | `[role="row"][aria-label="{name}"] [title="Remove"]`                                |
+| Kebab menu          | `[role="row"][aria-label="{registryName}"] button[aria-label="kebab menu"]`         |
+| Edit password       | `[role="row"][aria-label="{registryName}"] [title="Edit password"]`                 |
+| Remove              | `[role="row"][aria-label="{registryName}"] [title="Remove"]`                        |
 
 ### Add Registry Dialog
 
@@ -45,11 +45,11 @@
 
 ### Registry Row (edit mode)
 
-| Element        | Selector                                                                    |
-| -------------- | --------------------------------------------------------------------------- |
-| Username field | `[role="row"][aria-label="{name}"] [aria-label="Username"]`                 |
-| Password field | `[role="row"][aria-label="{name}"] [role="textbox"][aria-label="Password"]` |
-| Login button   | `[role="row"][aria-label="{name}"] button:has-text("Login")`                |
+| Element        | Selector                                                                            |
+| -------------- | ----------------------------------------------------------------------------------- |
+| Username field | `[role="row"][aria-label="{registryName}"] [aria-label="Username"]`                 |
+| Password field | `[role="row"][aria-label="{registryName}"] [role="textbox"][aria-label="Password"]` |
+| Login button   | `[role="row"][aria-label="{registryName}"] button:has-text("Login")`                |
 
 ## Operations
 

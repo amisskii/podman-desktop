@@ -40,15 +40,15 @@
 
 ### VolumesPage
 
-| Element       | Selector                                                                  |
-| ------------- | ------------------------------------------------------------------------- |
-| Page heading  | `[role="region"][aria-label="volumes"] [role="heading"]`                  |
-| Create button | `[aria-label="additionalActions"] button:has-text("Create")`              |
-| Prune button  | `[aria-label="additionalActions"] button:has-text("Prune")`               |
-| Gather sizes  | `[aria-label="additionalActions"] button:has-text("Gather volume sizes")` |
-| Volume row    | `[role="row"][aria-label="{volumeName}"]`                                 |
-| Name cell     | `[role="row"][aria-label="{name}"] [role="cell"]:nth-child(4)`            |
-| Delete (row)  | `[role="row"][aria-label="{name}"] button[aria-label="Delete Volume"]`    |
+| Element       | Selector                                                                     |
+| ------------- | ---------------------------------------------------------------------------- |
+| Page heading  | `[role="region"][aria-label="volumes"] [role="heading"]`                     |
+| Create button | `[aria-label="additionalActions"] button:has-text("Create")`                 |
+| Prune button  | `[aria-label="additionalActions"] button:has-text("Prune")`                  |
+| Gather sizes  | `[aria-label="additionalActions"] button:has-text("Gather volume sizes")`    |
+| Volume row    | `[role="row"][aria-label="{volumeName}"]`                                    |
+| Name cell     | `[role="row"][aria-label="{volumeName}"] [role="cell"]:nth-child(4)`         |
+| Delete (row)  | `[role="row"][aria-label="{volumeName}"] button[aria-label="Delete Volume"]` |
 
 ### CreateVolumePage
 

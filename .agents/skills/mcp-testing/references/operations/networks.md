@@ -40,13 +40,13 @@
 
 ### NetworksPage
 
-| Element         | Selector                                                           |
-| --------------- | ------------------------------------------------------------------ |
-| Page heading    | `[role="region"][aria-label="networks"] [role="heading"]`          |
-| Create button   | `[aria-label="additionalActions"] button:has-text("Create")`       |
-| Delete selected | `[aria-label="bottomAdditionalActions"] button:has-text("Delete")` |
-| Network row     | `[role="row"][aria-label="{networkName}"]`                         |
-| Name cell       | `[role="row"][aria-label="{name}"] [role="cell"]:nth-child(4)`     |
+| Element         | Selector                                                              |
+| --------------- | --------------------------------------------------------------------- |
+| Page heading    | `[role="region"][aria-label="networks"] [role="heading"]`             |
+| Create button   | `[aria-label="additionalActions"] button:has-text("Create")`          |
+| Delete selected | `[aria-label="bottomAdditionalActions"] button:has-text("Delete")`    |
+| Network row     | `[role="row"][aria-label="{networkName}"]`                            |
+| Name cell       | `[role="row"][aria-label="{networkName}"] [role="cell"]:nth-child(4)` |
 
 ### CreateNetworkPage
 
@@ -104,7 +104,7 @@
 ### Delete networks (bulk)
 
 1. Navigate to Networks page
-2. Select networks by clicking their checkboxes
+2. Select networks: `click('[role="row"][aria-label="{networkName}"] [role="cell"]:nth-child(2)')` (repeat for each network)
 3. Click Delete: `click('[aria-label="bottomAdditionalActions"] button:has-text("Delete")')`
 
 ## Gotchas

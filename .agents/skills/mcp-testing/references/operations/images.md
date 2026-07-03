@@ -42,21 +42,21 @@
 
 ### ImagesPage
 
-| Element             | Selector                                                                |
-| ------------------- | ----------------------------------------------------------------------- |
-| Page heading        | `[role="region"][aria-label="images"] [role="heading"]`                 |
-| Pull button         | `[aria-label="additionalActions"] button:has-text("Pull")`              |
-| Build button        | `[aria-label="additionalActions"] button:has-text("Build")`             |
-| Prune button        | `[aria-label="additionalActions"] button:has-text("Prune")`             |
-| Load Images button  | `[aria-label="Load Images"]`                                            |
-| Import Image button | `[aria-label="Import Image"]`                                           |
-| Image row           | `[role="row"][aria-label="{imageName}"]`                                |
-| Image name cell     | `[role="row"][aria-label="{name}"] [role="cell"]:nth-child(4)`          |
-| Image status        | `[role="row"][aria-label="{name}"] [role="status"]` (read `title` attr) |
-| Select all checkbox | `[role="checkbox"][aria-label="Toggle all"]`                            |
-| Delete selected     | `[aria-label="bottomAdditionalActions"] button:has-text("Delete")`      |
-| Prune confirm       | `button:has-text("All unused images")`                                  |
-| No Container Engine | `[role="heading"]:has-text("No Container Engine")`                      |
+| Element             | Selector                                                                     |
+| ------------------- | ---------------------------------------------------------------------------- |
+| Page heading        | `[role="region"][aria-label="images"] [role="heading"]`                      |
+| Pull button         | `[aria-label="additionalActions"] button:has-text("Pull")`                   |
+| Build button        | `[aria-label="additionalActions"] button:has-text("Build")`                  |
+| Prune button        | `[aria-label="additionalActions"] button:has-text("Prune")`                  |
+| Load Images button  | `[aria-label="Load Images"]`                                                 |
+| Import Image button | `[aria-label="Import Image"]`                                                |
+| Image row           | `[role="row"][aria-label="{imageName}"]`                                     |
+| Image name cell     | `[role="row"][aria-label="{imageName}"] [role="cell"]:nth-child(4)`          |
+| Image status        | `[role="row"][aria-label="{imageName}"] [role="status"]` (read `title` attr) |
+| Select all checkbox | `[role="checkbox"][aria-label="Toggle all"]`                                 |
+| Delete selected     | `[aria-label="bottomAdditionalActions"] button:has-text("Delete")`           |
+| Prune confirm       | `button:has-text("All unused images")`                                       |
+| No Container Engine | `[role="heading"]:has-text("No Container Engine")`                           |
 
 ### PullImagePage
 

@@ -80,15 +80,11 @@ nav[aria-label="Breadcrumb"]
 
 ### Dashboard
 
-| Element             | Selector                                                                                |
-| ------------------- | --------------------------------------------------------------------------------------- |
-| Page heading        | `[role="heading"]:has-text("Dashboard")`                                                |
-| Notifications box   | `[role="region"][aria-label="Notifications Box"]`                                       |
-| Featured extensions | `[role="region"][aria-label="FeaturedExtensions"]`                                      |
-| Podman provider     | `[role="region"][aria-label="Podman Provider"]`                                         |
-| Podman status       | `[role="region"][aria-label="Podman Provider"] [aria-label="Connection Status Label"]`  |
-| Initialize & start  | `[role="region"][aria-label="Podman Provider"] button:has-text("Initialize and start")` |
-| Transitioning state | `[role="region"][aria-label="Podman Provider"] [aria-label="Transitioning State"]`      |
+| Element        | Selector                                  |
+| -------------- | ----------------------------------------- |
+| Page region    | `[role="region"][aria-label="Dashboard"]` |
+| Page heading   | `h1:has-text("Dashboard")`                |
+| Content region | `[role="region"][aria-label="content"]`   |
 
 ### Status bar
 
@@ -110,12 +106,12 @@ nav[aria-label="Breadcrumb"]
 1. Check for Skip button: `evaluate('!!Array.from(document.querySelectorAll("button")).find(b => b.textContent.trim() === "Skip")')`
 2. Disable telemetry: `evaluate('const t = document.querySelector("input[aria-label=\\"Enable telemetry\\"]"); if (t?.checked) t.click(); "done"')`
 3. Click Skip: `click('button:has-text("Skip")')`
-4. Wait for dashboard: `wait('[role="heading"]:has-text("Dashboard")')`
+4. Wait for dashboard: `wait('h1:has-text("Dashboard")')`
 
 ### Navigate to a page
 
 1. Click nav link: `click('nav[aria-label="AppNavigation"] a[aria-label="{Page}"]')`
-2. Wait for heading: `wait('[role="heading"]')` (page-specific heading)
+2. Wait for page region: `wait('[role="region"][aria-label="{page}"]')` (lowercase page name, e.g. "containers", "images")
 
 ### Back/forward navigation
 

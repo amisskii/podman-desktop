@@ -121,7 +121,7 @@
 ### Create pod from containers (podify)
 
 1. Navigate to Containers page
-2. Select containers (click checkboxes)
+2. Select containers: `click('[role="row"][aria-label="{containerName}"] [role="cell"]:nth-child(2)')` (repeat for each container)
 3. Click Create Pod: `click('button:has-text("Create Pod")')`
 4. Wait for create page: `wait('[role="heading"]:has-text("Copy containers to a pod")')`
 5. Set pod name: `fill('[role="textbox"][aria-label="Pod name"]', '{podName}')`

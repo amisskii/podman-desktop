@@ -79,7 +79,7 @@ bash .agents/skills/mcp-testing/stop.sh
 pwsh .agents/skills/mcp-testing/stop.ps1
 ```
 
-**Port conflict:** For each port where `PORT_<port>_NAME` is not `none`, `electron`, `node`, or `Podman Desktop`, use `AskUserQuestion`:
+**Port conflict:** For each port where `PORT_<port>_NAME` is not `none`, `electron`, `node`, `Podman Desktop`, or `podman-desktop`, use `AskUserQuestion`:
 
 - **Question:** `Port {PORT} is in use by "{NAME}" (PID {PID}), which doesn't look like Podman Desktop. Kill it to free the port?`
 - **Header:** `Port conflict`

@@ -41,21 +41,21 @@
 
 ### ContainersPage
 
-| Element       | Selector                                                                  |
-| ------------- | ------------------------------------------------------------------------- |
-| Page heading  | `[role="region"][aria-label="containers"] [role="heading"]`               |
-| Create button | `[aria-label="additionalActions"] button:has-text("Create")`              |
-| Prune button  | `[aria-label="additionalActions"] button:has-text("Prune")`               |
-| Prune confirm | `button:has-text("Yes")`                                                  |
-| Run all       | `[aria-label="Run selected containers and pods"]`                         |
-| Container row | `[role="row"][aria-label="{containerName}"]`                              |
-| Name cell     | `[role="row"][aria-label="{name}"] [role="cell"]:nth-child(4)`            |
-| Image cell    | `[role="row"][aria-label="{name}"] [role="cell"]:nth-child(6)`            |
-| Start (row)   | `[role="row"][aria-label="{name}"] button[aria-label="Start Container"]`  |
-| Stop (row)    | `[role="row"][aria-label="{name}"] button[aria-label="Stop Container"]`   |
-| Delete (row)  | `[role="row"][aria-label="{name}"] button[aria-label="Delete Container"]` |
-| Environment   | `[role="row"][aria-label="{name}"] [data-testid="tooltip-trigger"]`       |
-| Create Pod    | `button:has-text("Create Pod")`                                           |
+| Element       | Selector                                                                           |
+| ------------- | ---------------------------------------------------------------------------------- |
+| Page heading  | `[role="region"][aria-label="containers"] [role="heading"]`                        |
+| Create button | `[aria-label="additionalActions"] button:has-text("Create")`                       |
+| Prune button  | `[aria-label="additionalActions"] button:has-text("Prune")`                        |
+| Prune confirm | `button:has-text("Yes")`                                                           |
+| Run all       | `[aria-label="Run selected containers and pods"]`                                  |
+| Container row | `[role="row"][aria-label="{containerName}"]`                                       |
+| Name cell     | `[role="row"][aria-label="{containerName}"] [role="cell"]:nth-child(4)`            |
+| Image cell    | `[role="row"][aria-label="{containerName}"] [role="cell"]:nth-child(6)`            |
+| Start (row)   | `[role="row"][aria-label="{containerName}"] button[aria-label="Start Container"]`  |
+| Stop (row)    | `[role="row"][aria-label="{containerName}"] button[aria-label="Stop Container"]`   |
+| Delete (row)  | `[role="row"][aria-label="{containerName}"] button[aria-label="Delete Container"]` |
+| Environment   | `[role="row"][aria-label="{containerName}"] [data-testid="tooltip-trigger"]`       |
+| Create Pod    | `button:has-text("Create Pod")`                                                    |
 
 ### Create Container Dialog
 

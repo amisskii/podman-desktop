@@ -54,10 +54,10 @@
 | Heading          | `[role="heading"]:has-text("CLI Tools")`                                       |
 | Tools table      | `[role="table"][aria-label="cli-tools"]`                                       |
 | Tool row         | `[role="table"][aria-label="cli-tools"] [role="row"][aria-label="{toolName}"]` |
-| Install button   | `[role="row"][aria-label="{tool}"] [aria-label="Install"]`                     |
-| Uninstall button | `[role="row"][aria-label="{tool}"] [aria-label="Uninstall"]`                   |
-| Version label    | `[role="row"][aria-label="{tool}"] [aria-label="cli-version"]`                 |
-| No version       | `[role="row"][aria-label="{tool}"] [aria-label="no-cli-version"]`              |
+| Install button   | `[role="row"][aria-label="{toolName}"] [aria-label="Install"]`                 |
+| Uninstall button | `[role="row"][aria-label="{toolName}"] [aria-label="Uninstall"]`               |
+| Version label    | `[role="row"][aria-label="{toolName}"] [aria-label="cli-version"]`             |
+| No version       | `[role="row"][aria-label="{toolName}"] [aria-label="no-cli-version"]`          |
 | Version dialog   | `[role="dialog"][aria-label="drop-down-dialog"]`                               |
 | Version input    | `[role="dialog"][aria-label="drop-down-dialog"] [role="textbox"]`              |
 
