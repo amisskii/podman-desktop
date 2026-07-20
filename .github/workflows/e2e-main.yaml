@@ -83,8 +83,6 @@ jobs:
   e2e-tests:
     name: Run E2E tests - ${{ matrix.installation }}
     runs-on: ubuntu-24.04
-    # disable on forks as secrets are not available
-    if: github.event.repository.fork == false
     permissions:
       checks: write # required for mikepenz/action-junit-report
     strategy:
@@ -161,7 +159,7 @@ jobs:
       - name: Run E2E tests in Production Mode
         if: matrix.installation == 'source-build'
         env:
-          PODMANDESKTOP_CI_BOT_TOKEN: ${{ secrets.PODMANDESKTOP_CI_BOT_TOKEN }}
+          PODMANDESKTOP_CI_BOT_TOKEN: ${{ secrets.WORKFLOW_PAT }}
           TEST_PODMAN_MACHINE: 'true'
           SKIP_KIND_INSTALL: 'true'
           KIND_PROVIDER_GHA: ${{ env.KIND_PROVIDER }}
@@ -181,7 +179,7 @@ jobs:
         if: matrix.installation == 'flatpak-build'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PODMANDESKTOP_CI_BOT_TOKEN: ${{ secrets.PODMANDESKTOP_CI_BOT_TOKEN }}
+          PODMANDESKTOP_CI_BOT_TOKEN: ${{ secrets.WORKFLOW_PAT }}
           TEST_PODMAN_MACHINE: 'true'
           SKIP_KIND_INSTALL: 'true'
           KIND_PROVIDER_GHA: ${{ env.KIND_PROVIDER }}
@@ -228,8 +226,6 @@ jobs:
   win-update-e2e-test:
     name: ${{ matrix.os }} update e2e tests - ${{ matrix.installation }}
     runs-on: ${{ matrix.os }}
-    # disable on forks as secrets are not available
-    if: github.event.repository.fork == false
     permissions:
       checks: write # required for mikepenz/action-junit-report
     env:
@@ -352,8 +348,6 @@ jobs:
       matrix:
         os: [macos-26, macos-15-intel]
     runs-on: ${{ matrix.os }}
-    # disable on forks as secrets are not available
-    if: github.event.repository.fork == false
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     timeout-minutes: 60
