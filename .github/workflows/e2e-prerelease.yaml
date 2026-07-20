@@ -31,11 +31,10 @@ jobs:
   trigger-e2e:
     name: Trigger E2E tests
     runs-on: ubuntu-24.04
-    if: github.event.repository.fork == false
     steps:
       - name: Trigger e2e-tests-main with all targets
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.WORKFLOW_PAT }}
         run: |
           gh workflow run e2e-main.yaml \
             --repo ${{ github.repository }} \
@@ -47,7 +46,6 @@ jobs:
   trigger-testing-farm:
     name: Trigger Testing Farm E2E tests
     runs-on: ubuntu-24.04
-    if: github.event.repository.fork == false
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -57,7 +55,7 @@ jobs:
 
       - name: Read bundled Podman version and trigger Testing Farm
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.WORKFLOW_PAT }}
         run: |
           PODMAN_VERSION=$(jq -r '.version' extensions/podman/packages/extension/src/podman*.json)
           echo "Podman version from JSON: $PODMAN_VERSION"
@@ -70,11 +68,10 @@ jobs:
   trigger-managed-configuration:
     name: Trigger managed configuration tests
     runs-on: ubuntu-24.04
-    if: github.event.repository.fork == false
     steps:
       - name: Trigger managed configuration tests
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.WORKFLOW_PAT }}
         run: |
           gh workflow run managed-configuration.yaml \
             --repo ${{ github.repository }} \
