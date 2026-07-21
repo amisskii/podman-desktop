@@ -41,7 +41,8 @@ jobs:
             -f organization=podman-desktop \
             -f repositoryName=podman-desktop \
             -f npm_target=test:e2e:all \
-            -f branch=${{ github.event.release.name || github.ref_name }}
+            -f branch=${{ github.event.release.name || github.ref_name }} \
+            -f release_tag=release
 
   trigger-testing-farm:
     name: Trigger Testing Farm E2E tests
@@ -63,7 +64,8 @@ jobs:
           gh workflow run e2e-main-tf.yaml \
             --repo ${{ github.repository }} \
             -f podman_version="$PODMAN_VERSION" \
-            -f npm_target=all
+            -f npm_target=all \
+            -f release_tag=release
 
   trigger-managed-configuration:
     name: Trigger managed configuration tests
@@ -75,4 +77,5 @@ jobs:
         run: |
           gh workflow run managed-configuration.yaml \
             --repo ${{ github.repository }} \
-            --ref ${{ github.event.release.name || github.ref_name }}
+            --ref ${{ github.event.release.name || github.ref_name }} \
+            -f release_tag=release
