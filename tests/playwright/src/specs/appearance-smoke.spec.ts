@@ -25,6 +25,7 @@ import { expect as playExpect, test } from '/@/utility/fixtures';
 let preferencesPage: PreferencesPage;
 
 test.beforeAll(async ({ runner, welcomePage, navigationBar }) => {
+  console.log('[TF branch verification] Running from branch: test/verify-tf-branch-input');
   runner.setVideoAndTraceName('appearance-e2e');
   await welcomePage.handleWelcomePage(true);
   const settingsBar = await navigationBar.openSettings();
