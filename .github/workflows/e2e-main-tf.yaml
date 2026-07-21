@@ -16,6 +16,11 @@
 
 name: PD E2E Testing Farm
 
+run-name: >-
+  ${{ inputs.release_tag
+      && format('PD E2E Testing Farm [{0}]', inputs.release_tag)
+      || '' }}
+
 on:
   schedule:
     - cron:  '0 0 * * *'
@@ -31,6 +36,11 @@ on:
         description: 'TMT plan target to run (e.g. smoke, e2e, kubernetes, all)'
         type: string
         default: 'e2e'
+      release_tag:
+        description: 'Tag to identify this run for report-portal'
+        type: string
+        default: ''
+        required: false
 
 permissions:
   contents: read
