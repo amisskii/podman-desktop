@@ -36,6 +36,11 @@ on:
         description: 'TMT plan target to run (e.g. smoke, e2e, kubernetes, all)'
         type: string
         default: 'e2e'
+      branch:
+        default: 'main'
+        description: 'Podman Desktop repo branch'
+        type: string
+        required: false
       release_tag:
         description: 'Tag to identify this run for report-portal'
         type: string
@@ -73,6 +78,7 @@ jobs:
         uses: sclorg/testing-farm-as-github-action@230555baceb860aa468d216f1822974836b965d1
         with:
           api_key: ${{ secrets.TF_TOKEN }}
+          git_ref: ${{ inputs.branch || github.ref }}
           create_github_summary: "false"
           compose: ${{ matrix.fedora-version }}
           tmt_plan_filter: 'name:/tests/tmt/plans/pd-e2e-plan/${{ env.NPM_TARGET }}'
