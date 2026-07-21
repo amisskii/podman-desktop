@@ -56,6 +56,7 @@ test.describe('Appearance theme switching', { tag: ['@smoke', '@windows_sanity',
   test.describe.configure({ mode: 'serial', retries: 1 });
 
   test('Default appearance value is system', async () => {
+    console.log('Verification block: appearance-smoke test is running');
     await playExpect
       .poll(async () => preferencesPage.getPreferenceDropdownValue(Preferences.Labels.APPEARANCE), {
         timeout: 15_000,
