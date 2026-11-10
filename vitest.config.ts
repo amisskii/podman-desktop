@@ -32,6 +32,7 @@ export default defineConfig({
     projects: [
       '{extensions,packages,tools,storybook,website,scripts}/**/{vitest,vite}.config.{js,ts}',
       '!**/builtin/**',
+      'tests/playwright/vitest.config.ts',
     ],
     // use GitHub action reporters when running in CI
     reporters: process.env['CI'] ? [['junit', { includeConsoleOutput: false }], 'default'] : ['default'],

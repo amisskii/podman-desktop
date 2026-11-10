@@ -219,8 +219,12 @@ export class ChromeDevToolsProtocolRunner extends Runner {
     console.log(`Starting Podman Desktop with CDP enabled: ${executablePath} on port ${debugPort}`);
 
     try {
+      const args = [`--remote-debugging-port=${debugPort}`];
+      if (process.env.E2E_MOCK_NATIVE_DIALOGS === 'true') {
+        args.push('--enable-features=ContextBridgeMutability');
+      }
       // Spawn the Electron process with remote debugging enabled
-      this._electronProcess = spawn(executablePath, [`--remote-debugging-port=${debugPort}`], {
+      this._electronProcess = spawn(executablePath, args, {
         env: env as NodeJS.ProcessEnv,
         stdio: ['ignore', 'pipe', 'pipe'],
       });

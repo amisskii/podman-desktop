@@ -20,6 +20,7 @@ import type { ElectronApplication } from '@playwright/test';
 
 import { ElectronRunner } from '/@/runner/electron-runner';
 import { RunnerFactory } from '/@/runner/runner-factory';
+import { withMockedRendererOpenFileDialog } from '/@/utility/renderer-dialog';
 
 async function getElectronApp(): Promise<ElectronApplication> {
   const runner = await RunnerFactory.getInstance();
@@ -34,6 +35,11 @@ async function getElectronApp(): Promise<ElectronApplication> {
  * executes the supplied action, and restores the original in a `finally` block.
  */
 export async function withMockedOpenFileDialog(filePaths: string[], action: () => Promise<void>): Promise<void> {
+  const runner = await RunnerFactory.getInstance();
+  if (!(runner instanceof ElectronRunner) && process.env.E2E_MOCK_NATIVE_DIALOGS === 'true') {
+    await withMockedRendererOpenFileDialog(runner.getPage(), filePaths, action);
+    return;
+  }
   const electronApp = await getElectronApp();
   await electronApp.evaluate(({ dialog }, paths) => {
     const d = dialog as unknown as Record<string, unknown>;

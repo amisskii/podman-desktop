@@ -19,7 +19,6 @@
 import test, { expect as playExpect, type Locator, type Page } from '@playwright/test';
 
 import type { KindClusterOptions } from '/@/model/core/types';
-import { withMockedOpenFileDialog } from '/@/utility/dialog';
 import { fillTextbox } from '/@/utility/operations';
 
 import { CreateClusterBasePage } from './cluster-creation-base-page';
@@ -80,9 +79,7 @@ export class CreateKindClusterPage extends CreateClusterBasePage {
 
       // Use the default cluster name if a custom config file is used; the default cluster name should be ignored in this case.
       if (configFilePath) {
-        await withMockedOpenFileDialog([configFilePath], async () => {
-          await this.configFileBrowseButton.click();
-        });
+        await fillTextbox(this.configFileInput, configFilePath);
         await playExpect(this.configFileInput).toHaveValue(configFilePath);
         await playExpect(this.warning).toBeVisible();
         await playExpect(this.warning).toContainText(

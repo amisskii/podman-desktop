@@ -44,15 +44,16 @@ is required depends on the spec.
 
 See [README.md](README.md) and [runner-factory.ts](src/runner/runner-factory.ts).
 
-| Variable / option                            | Meaning and default                                                                                                                                                                                 |
-| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PODMAN_DESKTOP_BINARY`                      | Packaged executable; unset uses development mode. Required only where stated.                                                                                                                       |
-| `PODMAN_DESKTOP_ARGS`                        | Built application repository for development mode, especially from another repository. Mutually exclusive with `PODMAN_DESKTOP_BINARY`.                                                             |
-| `DEBUGGING_PORT`                             | With `PODMAN_DESKTOP_BINARY`, selects the CDP runner. Requires the binary and cannot be combined with `PODMAN_DESKTOP_ARGS`. Native dialog/Electron interception checks have skips described below. |
-| `KEEP_TRACES_ON_PASS`, `KEEP_VIDEOS_ON_PASS` | Any non-empty value retains the corresponding passing-test artifacts; unset uses each suite's runner options (normally discard on pass).                                                            |
-| `SKIP_REMOVE_FOLDER`                         | Any non-empty value skips global setup's `tests/output` cleanup; a non-empty `CI` also skips it. This is distinct from `tests/playwright/output`.                                                   |
-| `CI`                                         | Shared `isCI` is true only for case-insensitive `true`. Some helpers use any non-empty value instead (registry credential defaults and global cleanup), as noted below.                             |
-| `RunnerOptions`                              | Specs may choose a profile folder, injected settings, or disabled extensions in code. These are not additional command-line environment variables.                                                  |
+| Variable / option                            | Meaning and default                                                                                                                                                                                                                                    |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `PODMAN_DESKTOP_BINARY`                      | Packaged executable; unset uses development mode. Required only where stated.                                                                                                                                                                          |
+| `PODMAN_DESKTOP_ARGS`                        | Built application repository for development mode, especially from another repository. Mutually exclusive with `PODMAN_DESKTOP_BINARY`.                                                                                                                |
+| `DEBUGGING_PORT`                             | With `PODMAN_DESKTOP_BINARY`, selects the CDP runner. Requires the binary and cannot be combined with `PODMAN_DESKTOP_ARGS`. Native dialog/Electron interception checks have skips described below.                                                    |
+| `E2E_MOCK_NATIVE_DIALOGS`                    | Exact `true` enables ContextBridgeMutability in the CDP runner and mocks open-file selection at the renderer bridge. Default: disabled. Use only for dedicated functional tests; this changes bridge immutability and bypasses native file-picker IPC. |
+| `KEEP_TRACES_ON_PASS`, `KEEP_VIDEOS_ON_PASS` | Any non-empty value retains the corresponding passing-test artifacts; unset uses each suite's runner options (normally discard on pass).                                                                                                               |
+| `SKIP_REMOVE_FOLDER`                         | Any non-empty value skips global setup's `tests/output` cleanup; a non-empty `CI` also skips it. This is distinct from `tests/playwright/output`.                                                                                                      |
+| `CI`                                         | Shared `isCI` is true only for case-insensitive `true`. Some helpers use any non-empty value instead (registry credential defaults and global cleanup), as noted below.                                                                                |
+| `RunnerOptions`                              | Specs may choose a profile folder, injected settings, or disabled extensions in code. These are not additional command-line environment variables.                                                                                                     |
 
 The runner normally redirects application data to
 `tests/playwright/output/<profile>/<customFolder>` and seeds settings there.
@@ -581,8 +582,12 @@ context-file management is in the engine-free UI group instead.
 
 ### Notes
 
-Kind stop/start/restart subgroups skip WSL. With the CDP runner, Kind
-custom-config and Kubernetes Apply YAML subgroups skip. Teardowns delete the
+Kind stop/start/restart subgroups skip WSL. Kind custom-config enters the path
+directly into the editable field and runs with either runner. Kubernetes Apply
+YAML skips with CDP unless `E2E_MOCK_NATIVE_DIALOGS=true`; with that option it
+clicks the actual button and applies the real file, but mocks file selection at
+the renderer bridge. The native file picker and its IPC are not covered in that
+mode. Other suites retain their existing CDP skips. Teardowns delete the
 created cluster and selected resources, but do not undo CLI installations or
 guarantee every pulled image is removed. Keep cluster/context names and ports
 free, and run these before destructive machine lifecycle workflows.
